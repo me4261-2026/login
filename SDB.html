@@ -116,7 +116,42 @@ footer{
   background:rgba(0,0,0,0.35);
   z-index:9999;
 }
+.attendanceBox{
+  padding:14px;
+  border-radius:14px;
+  font-weight:600;
+}
 
+.presentBox{
+  background:#e8f5e9;
+  border:1px solid #c8e6c9;
+  color:#1b5e20;
+}
+
+.absentBox{
+  background:#fdecea;
+  border:1px solid #f5c6cb;
+  color:#b71c1c;
+}
+
+.dateChip{
+  display:inline-block;
+  padding:6px 10px;
+  margin:6px 6px 0 0;
+  border-radius:8px;
+  font-size:13px;
+  font-weight:600;
+}
+
+.dateGreen{
+  background:#c8e6c9;
+  color:#1b5e20;
+}
+
+.dateRed{
+  background:#ffcdd2;
+  color:#b71c1c;
+}
 .logoutBox{
   position:absolute;
   top:50%;
@@ -208,7 +243,28 @@ footer{
   <button class="btn-attendance" onclick="viewAttendance()">
     View Attendance Details
   </button>
+  <div id="attendanceLoading"
+     style="display:none;
+            margin-top:12px;
+            color:#c62828;
+            font-weight:700;
+            text-align:center;">
+  Loading… Please wait
+</div>
 
+<div id="attendancePanel" style="display:none; margin-top:16px;">
+
+  <div class="attendanceBox presentBox">
+    <b>Present</b>
+    <div id="presentDates"></div>
+  </div>
+
+  <div class="attendanceBox absentBox" style="margin-top:12px">
+    <b>Absent</b>
+    <div id="absentDates"></div>
+  </div>
+
+</div>
   <button class="btn-logout" onclick="logout()">
     Logout
   </button>
@@ -267,8 +323,67 @@ document.getElementById("welcomeBox").style.display = "block";
 });
 
 /* ===== ACTIONS ===== */
+  function prettyDate(d){
+  const dt = new Date(d);
+  const day = dt.getDate();
+  const suf =
+    day % 10 === 1 && day !== 11 ? "st" :
+    day % 10 === 2 && day !== 12 ? "nd" :
+    day % 10 === 3 && day !== 13 ? "rd" : "th";
+
+  return `${day}${suf} ${dt.toLocaleString("en",{month:"short"})} ${dt.getFullYear()}`;
+}
 function viewAttendance(){
-  alert("Attendance details page can be linked here.");
+
+  const loading = document.getElementById("attendanceLoading");
+  const panel   = document.getElementById("attendancePanel");
+  const present = document.getElementById("presentDates");
+  const absent  = document.getElementById("absentDates");
+
+  loading.style.display = "block";
+  panel.style.display   = "none";
+  present.innerHTML = "";
+  absent.innerHTML  = "";
+
+  fetch(BACKEND,{
+    method:"POST",
+    body:new URLSearchParams({
+      action:"getMyAttendanceDetails",
+      token
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    loading.style.display = "none";
+    panel.style.display   = "block";
+
+    if(res.status !== "OK"){
+      present.innerHTML = "<i>No data</i>";
+      absent.innerHTML  = "<i>No data</i>";
+      return;
+    }
+
+    renderDates(present, res.attended, "dateGreen");
+    renderDates(absent,  res.absent,   "dateRed");
+  })
+  .catch(()=>{
+    loading.style.display = "none";
+    panel.style.display   = "block";
+    present.innerHTML = "Failed to load";
+    absent.innerHTML  = "Failed to load";
+  });
+}
+
+function renderDates(container, list, cls){
+
+  if(!list || !list.length){
+    container.innerHTML = "<i>No records</i>";
+    return;
+  }
+
+  container.innerHTML = list
+    .map(d => `<span class="dateChip ${cls}">${prettyDate(d)}</span>`)
+    .join("");
 }
 
 function logout(){
