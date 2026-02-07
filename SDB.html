@@ -86,6 +86,15 @@ footer{
   0%{transform:rotate(0deg);}
   100%{transform:rotate(360deg);}
 }
+  .welcomeText{
+  font-weight:800;
+  font-size:18px;
+}
+
+.welcomeHighlight{
+  color:#1b5e20;   /* green */
+  font-weight:800;
+}
 </style>
 </head>
 
@@ -101,11 +110,12 @@ footer{
 <div class="infoBox" id="loadingBox">
   Fetching your details… Please wait
 </div>
- <div class="infoBox" id="welcomeBox" style="display:none">
-  <div id="welcomeText">Welcome —</div>
+ <div id="welcomeBox" style="display:none; margin-top:16px; text-align:center;">
+  <div id="welcomeText" class="welcomeText"></div>
 </div>
 
   <!-- ATTENDANCE -->
+  <div id="contentArea" style="display:none">
   <div class="infoBox">
     Current Attendance Percentage
     <div id="attendanceValue" class="attendanceValue">—</div>
@@ -119,7 +129,7 @@ footer{
   <button class="btn-logout" onclick="logout()">
     Logout
   </button>
-
+</div>
 </div>
 <div id="logoutLoading"
      style="display:none;
@@ -167,9 +177,10 @@ Promise.all([
   }).then(r=>r.json())
 ])
 .then(([dash,att])=>{
+  document.getElementById("contentArea").style.display = "block";
 document.getElementById("loadingBox").style.display = "none";
- document.getElementById("welcomeText")
-  .innerText = `Welcome ${dash.name} (${dash.roll})`;
+ document.getElementById("welcomeText").innerHTML =
+  `Welcome <span class="welcomeHighlight">${dash.name} (${dash.roll})</span>`;
 document.getElementById("welcomeBox").style.display = "block";
   if(att.status==="OK"){
     const pct = Number(att.percent);
