@@ -80,14 +80,18 @@ button{
 }
 
 footer{
-  width:100vw;                 /* 🔑 full screen width */
-  margin-left:calc(-50vw + 50%); /* 🔑 break out of centered layout */
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  width:100%;
   background:#0f2027;
   color:#cfd8dc;
   text-align:center;
   padding:10px 12px;
   font-size:13px;
   font-weight:600;
+  z-index:1000;
 }
   @keyframes spin{
   0%{transform:rotate(0deg);}
@@ -140,6 +144,7 @@ footer{
 
   body{
     padding:16px 10px 20px;
+    padding-bottom:70px;
   }
 
   .card{
@@ -168,13 +173,7 @@ footer{
     font-size:14px;
   }
 
-  footer{
-    position:static;     /* 🔑 IMPORTANT */
-    margin-top:18px;
-    font-size:12px;
-  }
-
-  .logoutBox{
+    .logoutBox{
     width:85%;
     padding:20px;
   }
