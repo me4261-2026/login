@@ -98,13 +98,19 @@ footer{
   #logoutOverlay{
   display:none;
   position:fixed;
-  inset:0;
+  top:0;
+  left:0;
+  width:100vw;
+  height:100vh;
   background:rgba(0,0,0,0.35);
   z-index:9999;
-  align-items:center;
-  justify-content:center;
 }
+
 .logoutBox{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
   background:#ffffff;
   padding:24px 30px;
   border-radius:16px;
