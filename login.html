@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student Login | ME3273</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{box-sizing:border-box;}
+body{
+  font-family:"Segoe UI",Arial,sans-serif;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  height:100vh;margin:0;
+  display:flex;justify-content:center;align-items:center;
+}
+.card{
+  background:#fff;
+  width:100%;max-width:420px;
+  padding:32px 30px;
+  border-radius:14px;
+  box-shadow:0 15px 40px rgba(0,0,0,.25);
+  animation:fadeIn .6s ease;
+}
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(20px);}
+  to{opacity:1;transform:translateY(0);}
+}
+h1{text-align:center;color:#203a43;font-size:20px;margin-bottom:6px;}
+h2{text-align:center;color:#555;font-size:15px;margin-bottom:22px;}
+label{font-weight:600;margin-top:14px;display:block;}
+input{
+  width:100%;padding:10px 12px;margin-top:6px;
+  border-radius:6px;border:1px solid #ccc;font-size:15px;
+}
+button{
+  margin-top:26px;width:100%;padding:12px;
+  background:linear-gradient(135deg,#2c5364,#203a43);
+  color:#fff;border:none;font-size:16px;
+  font-weight:600;border-radius:30px;cursor:pointer;
+}
+button:disabled{background:#999;cursor:not-allowed;}
+.msg{text-align:center;margin-top:18px;font-weight:600;}
+.loader{
+  border:4px solid #f3f3f3;
+  border-top:4px solid #2c5364;
+  border-radius:50%;
+  width:32px;height:32px;
+  margin:10px auto;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{
+  0%{transform:rotate(0deg);}
+  100%{transform:rotate(360deg);}
+}
+.register{text-align:center;margin-top:12px;font-size:13px;}
+.register a{color:#2c5364;font-weight:600;text-decoration:none;}
+.footer{
+  margin-top:26px;
+  text-align:center;
+  font-size:13px;
+  color:#5f6f78;
+  font-weight:600;
+}
+.footer div{
+  font-size:12px;
+  color:#7a8a93;
+}
+.faculty-box{margin-top:14px;}
+.faculty-btn{
+  width:100%;
+  padding:12px;
+  background:linear-gradient(135deg,#f39c12,#e67e22);
+  color:#fff;
+  border:none;
+  font-size:16px;
+  font-weight:600;
+  border-radius:30px;
+  cursor:pointer;
+  box-shadow:0 6px 18px rgba(230,126,34,.35);
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.faculty-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 10px 24px rgba(230,126,34,.45);
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h1>Student Login</h1>
+  <h2>Seminar & Group Discussion (ME3273)</h2>
+
+  <label>Roll Number</label>
+  <input id="roll">
+
+  <label>Date of Birth</label>
+  <input type="date" id="dob">
+
+  <button id="loginBtn" onclick="login()">Login</button>
+
+  <div class="msg" id="msg"></div>
+
+  <div class="register">
+    Not registered?
+    <a href="https://me3273dy2026.github.io/Reg/" target="_blank">
+      Click here to register
+    </a>
+  </div>
+
+  <div class="faculty-box">
+    <button class="faculty-btn" onclick="facultyLogin()">
+      Faculty Login
+    </button>
+  </div>
+
+  <div class="footer">
+    Developed by Dr. Rajesh Akula
+    <div>© 2026 · IIEST Shibpur</div>
+  </div>
+</div>
+
+<script>
+  if(sessionStorage.getItem("token")){
+  window.location.href = "allocate.html"; // or dashboard.html
+}
+const BACKEND_URL =
+"https://script.google.com/macros/s/AKfycbxcSBIRe5BDQ-3APOvGYDWVo_duFBUsI3OJ2OUlh7bM-skyKAKmrgWQ73kw_Gd27fdN/exec";  
+function login(){
+  const roll=document.getElementById("roll").value.trim().toUpperCase();
+  const dob=document.getElementById("dob").value;
+  const msg=document.getElementById("msg");
+  const btn=document.getElementById("loginBtn");
+
+  if(!roll||!dob){
+    msg.style.color="red";
+    msg.innerText="Enter Roll Number and DOB";
+    return;
+  }
+
+  btn.disabled=true;
+  msg.innerHTML='<div class="loader"></div>Authenticating…';
+
+  fetch(BACKEND_URL,{
+    method:"POST",
+    body:new URLSearchParams({
+      action:"login",
+      roll:roll,
+      dob:dob
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.status === "OK" && res.token){
+  sessionStorage.setItem("token", res.token);   // 🔑 CORRECT KEY
+  window.location.href = "allocate.html"; // 🔑 DASHBOARD
+  return;
+}
+    msg.style.color="red";
+    msg.innerText =
+      res.status==="ALREADY_LOGGED_IN"
+        ? "You are already logged in from another device."
+        : res.status==="NOT_REGISTERED"
+        ? "Not registered."
+        : "Login failed. Please try again.";
+
+    btn.disabled=false;
+  })
+  .catch(()=>{
+    msg.style.color="red";
+    msg.innerText="Server error";
+    btn.disabled=false;
+  });
+}
+
+function facultyLogin(){
+  window.location.href="faculty_login.html";
+}
+</script>
+
+</body>
+</html>
