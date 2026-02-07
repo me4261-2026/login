@@ -21,6 +21,13 @@ body{
   justify-content:center;
   padding:26px 12px 90px;
 }
+  .page{
+  width:100%;
+  max-width:520px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
 .card{
   background:#fff;
   width:100%;
@@ -176,7 +183,7 @@ footer{
 </head>
 
 <body>
-
+<div class="page">
 <div class="card">
 
   <!-- HEADER -->
@@ -208,17 +215,18 @@ footer{
   </button>
 </div>
 </div>
+  <footer>
+  Developed by Dr. Rajesh Akula
+  <div>© 2026 · IIEST Shibpur</div>
+</footer>
+
 <div id="logoutOverlay">
   <div class="logoutBox">
     <div class="logoutSpinner"></div>
     Logging out… Please wait
   </div>
 </div>
-  
-<footer>
-  Developed by Dr. Rajesh Akula
-  <div>© 2026 · IIEST Shibpur</div>
-</footer>
+ 
 
 <script>
 const BACKEND =
@@ -276,7 +284,7 @@ function logout(){
   });
 
   // Show loader
-  document.getElementById("logoutOverlay").style.display = "flex";
+  document.getElementById("logoutOverlay").style.display = "block";
 
   fetch(BACKEND,{
     method:"POST",
@@ -292,5 +300,5 @@ function logout(){
 }
 </script>
 
-</body>
+ </body>
 </html>
