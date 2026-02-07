@@ -158,18 +158,21 @@ function login(){
   return;
 }
 
-msg.style.color="red";
+msg.style.color = "red";
 
-if(res.status==="NOT_REGISTERED"){
+if(res.status === "DOB_MISMATCH"){
+  msg.innerText = "Roll number exists, but Date of Birth is incorrect.";
+}
+else if(res.status === "NOT_REGISTERED"){
   msg.innerHTML =
     'You are not registered. ' +
     '<a href="../Reg/">Register here</a>';
 }
 else{
-  msg.innerText="Login failed. Please try again.";
+  msg.innerText = "Login failed. Please try again.";
 }
 
-btn.disabled=false;
+btn.disabled = false;
   })
   .catch(()=>{
     msg.style.color="red";
