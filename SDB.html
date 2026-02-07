@@ -95,6 +95,34 @@ footer{
   color:#1b5e20;   /* green */
   font-weight:800;
 }
+  #logoutOverlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.35);
+  z-index:9999;
+  align-items:center;
+  justify-content:center;
+}
+.logoutBox{
+  background:#ffffff;
+  padding:24px 30px;
+  border-radius:16px;
+  text-align:center;
+  font-weight:700;
+  color:#555;
+  box-shadow:0 12px 30px rgba(0,0,0,0.25);
+}
+
+.logoutSpinner{
+  width:36px;
+  height:36px;
+  margin:0 auto 12px;
+  border:4px solid #eee;
+  border-top:4px solid #c0392b;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
 </style>
 </head>
 
@@ -131,22 +159,11 @@ footer{
   </button>
 </div>
 </div>
-<div id="logoutLoading"
-     style="display:none;
-            text-align:center;
-            margin-top:12px;
-            font-weight:600;
-            color:#555;">
-  <div style="
-    border:4px solid #f3f3f3;
-    border-top:4px solid #c0392b;
-    border-radius:50%;
-    width:28px;
-    height:28px;
-    margin:0 auto 8px;
-    animation:spin 1s linear infinite;">
+<div id="logoutOverlay">
+  <div class="logoutBox">
+    <div class="logoutSpinner"></div>
+    Logging out… Please wait
   </div>
-  Logging out… Please wait
 </div>
   
 <footer>
@@ -210,7 +227,7 @@ function logout(){
   });
 
   // Show loader
-  document.getElementById("logoutLoading").style.display = "block";
+  document.getElementById("logoutOverlay").style.display = "flex";
 
   fetch(BACKEND,{
     method:"POST",
