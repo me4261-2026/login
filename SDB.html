@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student Dashboard | ME4261</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --bg1:#0f2027;
+  --bg2:#203a43;
+  --bg3:#2c5364;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:"Segoe UI",Arial,sans-serif;
+  min-height:100vh;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
+  display:flex;
+  justify-content:center;
+  padding:26px 12px 90px;
+}
+.card{
+  background:#fff;
+  width:100%;
+  max-width:560px;
+  border-radius:20px;
+  padding:26px;
+  box-shadow:0 20px 50px rgba(0,0,0,.28);
+}
+.header{text-align:center}
+.header h1{margin:0;color:#203a43;font-size:22px}
+.header h2{margin:4px 0 0;font-size:14px;color:#666}
+.infoBox{
+  background:#f5f7fa;
+  padding:14px;
+  border-radius:14px;
+  margin-top:14px;
+}
+.loading{text-align:center;font-weight:600;color:#555}
+.upcomingBox{
+  background:#fdecea;
+  border:2px solid #e53935;
+  color:#b71c1c;
+  font-weight:700;
+  text-align:center;
+  padding:14px;
+  border-radius:14px;
+  margin-top:14px;
+  animation:blink 1.5s infinite;
+}
+@keyframes blink{0%{opacity:1}50%{opacity:.45}100%{opacity:1}}
+.pastBox{
+  background:#e8f5e9;
+  border:1px solid #c8e6c9;
+  color:#1b5e20;
+  font-weight:600;
+  text-align:center;
+  padding:12px;
+  border-radius:14px;
+  margin-top:10px;
+}
+  .scoreBox{
+  display:inline-block;        /* 🔑 key change */
+  text-align:center;
+  padding:12px 18px;
+  border-radius:14px;
+  margin:0 auto 12px;
+  font-weight:800;
+}
+
+.score-80{ background:#e8f5e9; color:#1b5e20; }
+.score-70{ background:#e3f2fd; color:#0d47a1; }
+.score-60{ background:#fff9c4; color:#f57f17; }
+.score-low{ background:#fdecea; color:#b71c1c; }
+
+.tagline{
+  font-weight:600;
+  margin-top:6px;
+}
+
+.feedbackBox{
+  background:#f5f7fa;
+  border-radius:12px;
+  padding:10px;
+  margin-top:10px;
+}
+
+.feedbackBox b{
+  display:block;
+  margin-bottom:6px;
+}
+  .completedBox{
+  background:#eef3f7;
+  border:1px solid #d0d7de;
+  border-radius:14px;
+  padding:14px;
+  margin-top:14px;
+}
+
+.completedBox h3{
+  margin:0 0 10px;
+  font-size:15px;
+  font-weight:800;
+  color:#203a43;
+  text-align:left;   /* 👈 left aligned */
+}
+  .positivesBox{
+  background:#e8f5e9;          /* light green */
+  border:1px solid #c8e6c9;
+  border-radius:12px;
+  padding:12px;
+  margin-top:10px;
+}
+
+.improveBox{
+  background:#fff9c4;          /* light yellow */
+  border:1px solid #fbc02d;
+  border-radius:12px;
+  padding:12px;
+  margin-top:10px;
+}
+.btn-secondary{
+  background: linear-gradient(135deg,#009688,#00796b);
+  color:#fff;
+}
+.feedbackBox ol{
+  margin:6px 0 0 18px;
+  padding:0;
+}
+  .loading-text{
+  font-weight:600;
+  color:#c62828;
+  text-align:center;
+}
+button{
+  width:100%;
+  padding:13px;
+  margin-top:14px;
+  border:none;
+  border-radius:30px;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+}
+.btn-primary{
+  background:linear-gradient(135deg,#2c5364,#203a43);
+  color:#fff;
+}
+.btn-attendance{
+  background:linear-gradient(135deg,#2e7d32,#1b5e20);
+  color:#fff;
+}
+.btn-logout{
+  background:linear-gradient(135deg,#e74c3c,#c0392b);
+  color:#fff;
+}
+  .dateChip{
+  display:inline-block;
+  padding:6px 10px;
+  margin:6px 6px 0 0;
+  border-radius:8px;
+  font-size:13px;
+  font-weight:600;
+}
+.date-green{
+  background:#c8e6c9;
+  color:#1b5e20;
+}
+.date-red{
+  background:#ffcdd2;
+  color:#b71c1c;
+}
+  .attendance-group{
+  margin-top:12px;
+  padding:14px;
+  border-radius:14px;
+}
+
+.attendance-present{
+  background:#e8f5e9;          /* light green */
+  border:1px solid #c8e6c9;
+  color:#1b5e20;
+}
+
+.attendance-absent{
+  background:#fdecea;          /* light red */
+  border:1px solid #f5c6cb;
+  color:#b71c1c;
+}
+.attendance-good{
+  color:#1b5e20;   /* green */
+}
+
+.attendance-bad{
+  color:#b71c1c;   /* red */
+}
+.attendance-group b{
+  display:block;
+  margin-bottom:8px;
+}
+  .status-upcoming{
+  background:#fdecea;            /* pale red */
+  border:2px solid #e53935;
+  color:#b71c1c;
+  font-weight:800;
+  text-align:center;
+  padding:14px;
+  border-radius:14px;
+  animation:blink 1.6s infinite;
+}
+
+.status-none{
+  background:#e3f2fd;            /* pale blue */
+  border:1px solid #64b5f6;
+  color:#0d47a1;
+  font-weight:800;
+  text-align:center;
+  padding:14px;
+  border-radius:14px;
+}
+
+.status-pending{
+  background:#fff9c4;            /* pale yellow */
+  border:1px solid #fbc02d;
+  color:#f57f17;
+  font-weight:800;
+  text-align:center;
+  padding:14px;
+  border-radius:14px;
+}
+.section{
+  margin-top:10px;
+  border-radius:14px;
+  overflow:hidden;
+  border:1px solid #e0e0e0;
+}
+.section-header{
+  background:#fafafa;
+  padding:12px 14px;
+  font-weight:700;
+  cursor:pointer;
+}
+.section-body{padding:14px;display:none}
+.section.open .section-body{display:block}
+footer{
+  position:fixed;
+  bottom:0;left:0;right:0;
+  background:#0f2027;
+  color:#cfd8dc;
+  text-align:center;
+  padding:10px;
+  font-size:13px;
+  font-weight:600;
+}
+  
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <div class="header">
+    <h1 id="welcome"></h1>
+    <h2>ME3273 · Seminar & Group Discussion</h2>
+  </div>
+
+  <div id="attendanceBox" class="infoBox" style="display:none;text-align:center">
+    Current attendance :
+    <div id="attendanceValue" style="font-size:22px;font-weight:800;margin-top:6px"></div>
+  </div>
+
+  <div id="loadingBox" class="infoBox loading">Fetching your details…</div>
+  <div id="upcomingBox" style="display:none"></div>
+
+   <div id="actionButtons" style="display:none">
+    <button class="btn-secondary" onclick="toggleProfileDetails()">
+    View GD / Seminar Details
+  </button>
+     <div id="profileBox" class="infoBox" style="display:none">
+    <div><b>GD Topic:</b> <span id="gdTopic">-</span></div>
+    <div style="margin-top:8px"><b>GD Group Members:</b> <div id="gdMembers">-</div></div>
+    <div style="margin-top:8px"><b>Seminar Topic:</b> <span id="seminarTopic">-</span></div>
+  </div>
+    <button id="perfBtn" class="btn-primary" onclick="togglePanel()">View Performance Evaluation</button>
+
+    <div id="perfPanel" style="display:none">
+      <div class="section" onclick="toggleSection('GD')">
+        <div class="section-header">Group Discussion</div>
+        <div class="section-body" id="GD"></div>
+      </div>
+      <div class="section" onclick="toggleSection('SEMINAR')">
+        <div class="section-header">Seminar</div>
+        <div class="section-body" id="SEMINAR"></div>
+      </div>
+      <div class="section" onclick="toggleSection('PI')">
+        <div class="section-header">Personal Interview</div>
+        <div class="section-body" id="PI"></div>
+      </div>
+    </div>
+
+    <button class="btn-attendance" onclick="toggleAttendanceDetails()">View Attendance Details</button>
+    <div id="attendanceLoadingMsg"
+     style="display:none;
+            margin-top:8px;
+            color:#c62828;
+            font-weight:600;
+            text-align:center;">
+  Loading… Please wait
+</div>
+    <div id="attendancePanel" style="display:none;margin-top:14px">
+
+  <div id="attendanceContent" style="display:none">
+   <div class="attendance-group attendance-present">
+  <b>Attended</b>
+  <div id="attendedDates"></div>
+</div>
+
+<div class="attendance-group attendance-absent" style="margin-top:10px">
+  <b>Absent</b>
+  <div id="absentDates"></div>
+</div>
+  </div>
+
+</div>
+
+    <button id="logoutBtn" class="btn-logout" onclick="logout()">Logout</button>
+  </div>
+</div>
+
+<footer>
+  Developed by Dr. Rajesh Akula
+  <div>© 2026 · IIEST Shibpur</div>
+</footer>
+
+<script>
+const BACKEND="https://script.google.com/macros/s/AKfycbxcSBIRe5BDQ-3APOvGYDWVo_duFBUsI3OJ2OUlh7bM-skyKAKmrgWQ73kw_Gd27fdN/exec";
+const token=sessionStorage.getItem("token");
+if(!token){ alert("Session expired"); location.replace("index.html"); }
+
+function prettyDate(d){
+  const dt=new Date(d);
+  const day=dt.getDate();
+  const suf=day%10===1&&day!==11?"st":day%10===2&&day!==12?"nd":day%10===3&&day!==13?"rd":"th";
+  return `${day}${suf} ${dt.toLocaleString("en",{month:"short"})} ${dt.getFullYear()}`;
+}
+function isToday(d){
+  const t=new Date();
+  return d===`${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`;
+}
+ function toList(txt){
+  if(!txt) return "<i>Not available</i>";
+
+  const items = txt
+    .split(/\n+/)                 // split lines
+    .map(t => t.trim())           // trim spaces
+    .filter(t => t && t !== "-"); // ❌ remove empty / dash-only lines
+
+  if(!items.length){
+    return "<i>Not available</i>";
+  }
+
+  return `<ol>${
+    items.map(t => `<li>${t}</li>`).join("")
+  }</ol>`;
+}
+function isAfter2PMOfDate(d){
+  const cut=new Date(new Date(d).toLocaleString("en-US",{timeZone:"Asia/Kolkata"}));
+  cut.setHours(14,0,0,0);
+  return new Date()>=cut;
+}
+function before2PMOnDate(d){
+  const now=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"}));
+  const x=new Date(d); x.setHours(0,0,0,0);
+  return now.toDateString()===x.toDateString() && now.getHours()<14;
+}
+function canShowUpcoming(d){
+  const today=new Date().toISOString().slice(0,10);
+  if(d>today) return true;
+  if(d===today) return new Date().getHours()<14;
+  return false;
+}
+
+loadAll();
+  
+function loadAll(){
+Promise.all([
+  fetch(BACKEND,{method:"POST",body:new URLSearchParams({action:"dashboard",token})}).then(r=>r.json()),
+  fetch(BACKEND,{method:"POST",body:new URLSearchParams({action:"getMyUpcomingAllocation",token})}).then(r=>r.json()),
+  fetch(BACKEND,{method:"POST",body:new URLSearchParams({action:"getMyPastAllocations",token})}).then(r=>r.json()),
+  fetch(BACKEND,{method:"POST",body:new URLSearchParams({action:"getMyProfileDetails",token})}).then(r=>r.json()),
+  fetch(BACKEND,{method:"POST",body:new URLSearchParams({action:"getMyAttendance",token})}).then(r=>r.json())
+]).then(([dash,upcoming,pastList,profile,attendance])=>{
+  document.getElementById("loadingBox").style.display="none";
+  document.getElementById("welcome").innerText=`Welcome ${dash.name} (${dash.roll})`;
+
+  if(profile.status==="OK"){
+    gdTopic.innerText=profile.gdTopic||"-";
+    seminarTopic.innerText=profile.seminarTopic||"-";
+    gdMembers.innerHTML=profile.members.map(m=>`<div>${m}</div>`).join("");
+  }
+
+  if(attendance.status==="OK"){
+  attendanceBox.style.display="block";
+
+  const pct = Number(attendance.percent);
+  attendanceValue.innerText = `${pct}%`;
+
+  attendanceValue.classList.remove("attendance-good","attendance-bad");
+
+  if(pct >= 75){
+    attendanceValue.classList.add("attendance-good");
+  }else{
+    attendanceValue.classList.add("attendance-bad");
+  }
+}
+
+ let msgs = [], pastMsgs = [];
+
+/* ===== ALLOCATION STATUS (BACKEND DRIVEN) ===== */
+
+const activeDate = pastList.activeAllocationDate;
+const nextWeek   = pastList.nextWeekDate;
+
+if (activeDate) {
+
+  // Student has allocation on active date?
+  if (upcoming.status === "FOUND" && upcoming.date === activeDate) {
+
+    msgs.push(`
+      <div class="status-upcoming">
+        Upcoming: You have <b>${upcoming.category}</b><br>
+        on ${prettyDate(activeDate)}
+      </div>
+    `);
+
+  } else {
+
+    msgs.push(`
+      <div class="status-none">
+        You don’t have any allocations for the coming week
+        <br>
+        <b>(${prettyDate(activeDate)})</b>
+      </div>
+    `);
+  }
+
+} else {
+
+  // No active allocation → allocation cycle closed
+  msgs.push(`
+    <div class="status-pending">
+      The allocation for the next week
+      <br>
+      <b>(${prettyDate(nextWeek)})</b>
+      has not been done yet
+    </div>
+  `);
+}
+
+ if(pastList.status==="OK"){
+  pastList.allocations.forEach(a=>{
+
+    const style = a.evaluated
+      ? ""
+      : "background:#fff9c4;border:1px solid #fdd835;color:#5d4037";
+
+    pastMsgs.push(`
+  <div class="pastBox" style="${style}">
+    ${a.category} · ${prettyDate(a.date)}<br>
+    <i>(${a.evaluated ? "Evaluation completed" : "Evaluation under process"})</i>
+  </div>
+`);
+  });
+}
+ let completedHTML = "";
+
+if(pastMsgs.length){
+  completedHTML = `
+    <div class="completedBox">
+      <h3>Completed</h3>
+      ${pastMsgs.join("")}
+    </div>
+  `;
+} 
+ upcomingBox.innerHTML = [
+  ...msgs,
+  completedHTML
+].join("");
+  upcomingBox.style.display="block";
+  actionButtons.style.display="block";
+});
+}
+
+/* ===== GLOBAL FUNCTIONS ===== */
+function togglePanel(){ perfPanel.style.display=perfPanel.style.display==="none"?"block":"none"; }
+  function toggleProfileDetails(){
+  const box = document.getElementById("profileBox");
+  box.style.display = box.style.display === "none" ? "block" : "none";
+}
+function toggleSection(t){
+  const body = document.getElementById(t);
+  const section = body.parentElement;
+
+  section.classList.toggle("open");
+
+  // If already loaded, don't fetch again
+  if(body.dataset.loaded) return;
+
+  // 🔴 Loading state
+  body.innerHTML = `<div class="loading-text">Loading… Please wait</div>`;
+
+  fetch(BACKEND,{
+    method:"POST",
+    body:new URLSearchParams({
+      action:"getMyPerformance",
+      token,
+      type:t
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    body.dataset.loaded = "yes";
+
+    if(res.status !== "FOUND"){
+      body.innerHTML = "Not yet evaluated";
+      return;
+    }
+
+    const m = Number(res.marks);
+
+    let cls, tag, note;
+
+if(m >= 90){
+  cls  = "score-80";
+  tag  = "Excellent performance";
+  note = "Keep up the excellent work and maintain this consistency.";
+}
+else if(m >= 80){
+  cls  = "score-70";
+  tag  = "Good performance";
+  note = "You are performing well — a little more refinement will take you to the next level.";
+}
+else if(m >= 70){
+  cls  = "score-60";
+  tag  = "Satisfactory performance";
+  note = "You have a good foundation — focused effort can significantly improve your performance.";
+}
+else{
+  cls  = "score-low";
+  tag  = "Needs improvement";
+  note = "Don’t be discouraged — consistent effort and guidance will help you improve.";
+}
+
+   body.innerHTML = `
+  <div style="text-align:center">
+    <div class="scoreBox ${cls}">
+    <div style="font-size:26px">${m} / 100</div>
+    <div class="tagline">${tag}</div>
+  </div>
+
+  <div style="
+    margin-top:6px;
+    font-size:13px;
+    font-weight:600;
+    color:#455a64;
+  ">
+    ${note}
+  </div>
+  </div>
+
+  <div class="feedbackBox positivesBox">
+    <b>Positives</b>
+    ${toList(res.positives)}
+  </div>
+
+  <div class="feedbackBox improveBox">
+    <b>Scope for Improvement</b>
+    ${toList(res.improvements)}
+  </div>
+`;
+  })
+  .catch(()=>{
+    body.innerHTML = "Failed to load";
+  });
+}
+function toggleAttendanceDetails(){
+  const panel   = document.getElementById("attendancePanel");
+  const content = document.getElementById("attendanceContent");
+  const msg     = document.getElementById("attendanceLoadingMsg");
+
+  panel.style.display =
+    panel.style.display === "none" ? "block" : "none";
+
+  // If already loaded, just toggle visibility
+  if(panel.dataset.loaded){
+    content.style.display = "block";
+    return;
+  }
+
+  panel.dataset.loaded = "yes";
+  msg.style.display = "block";       // 🔴 Show loading
+  content.style.display = "none";    // ❌ Hide headings
+
+  fetch(BACKEND,{
+    method:"POST",
+    body:new URLSearchParams({
+      action:"getMyAttendanceDetails",
+      token
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    msg.style.display = "none";      // ✅ Hide loading
+    content.style.display = "block"; // ✅ Show headings
+
+    if(res.status !== "OK"){
+      attendedDates.innerHTML = "<i>No data</i>";
+      absentDates.innerHTML   = "<i>No data</i>";
+      return;
+    }
+
+    renderDates("attendedDates", res.attended, "date-green");
+    renderDates("absentDates",   res.absent,   "date-red");
+  })
+  .catch(()=>{
+    msg.style.display = "none";
+    content.style.display = "block";
+    attendedDates.innerHTML = "Failed to load";
+    absentDates.innerHTML   = "Failed to load";
+  });
+}
+  function renderDates(id, list, cls){
+  const box = document.getElementById(id);
+
+  if(!list || !list.length){
+    box.innerHTML = "<i>No records</i>";
+    return;
+  }
+
+  box.innerHTML = list
+    .map(d => `<span class="dateChip ${cls}">${prettyDate(d)}</span>`)
+    .join("");
+}
+function logout(){
+
+  const ok = confirm("Are you sure you want to logout?");
+  if(!ok) return;
+
+  // Disable all buttons immediately
+  document.querySelectorAll("button").forEach(btn=>{
+    btn.disabled = true;
+    btn.style.opacity = "0.6";
+    btn.style.cursor = "not-allowed";
+  });
+
+  // 🔑 CALL BACKEND LOGOUT
+  fetch(BACKEND,{
+    method:"POST",
+    body:new URLSearchParams({
+      action:"logout",
+      token: token   // 👈 THIS WAS MISSING
+    })
+  })
+  .finally(()=>{   // even if backend fails, force logout UX
+    sessionStorage.clear();
+    location.replace("index.html");
+  });
+}
+</script>
+
+</body>
+</html>
