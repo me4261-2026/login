@@ -126,7 +126,7 @@ button:disabled{background:#999;cursor:not-allowed;}
   window.location.href = "SDB.html"; // or dashboard.html
 }
 const BACKEND_URL =
-"https://script.google.com/macros/s/AKfycbxcSBIRe5BDQ-3APOvGYDWVo_duFBUsI3OJ2OUlh7bM-skyKAKmrgWQ73kw_Gd27fdN/exec";  
+"https://script.google.com/macros/s/AKfycbxB622Y8T5cuJgngy4bOqkrtRw0sq80E4_948dOLhivUCFzlAYOsYfE4401YJKkGvpO/exec";  
 function login(){
   const roll=document.getElementById("roll").value.trim().toUpperCase();
   const dob=document.getElementById("dob").value;
@@ -153,19 +153,23 @@ function login(){
   .then(r=>r.json())
   .then(res=>{
     if(res.status === "OK" && res.token){
-  sessionStorage.setItem("token", res.token);   // 🔑 CORRECT KEY
-  window.location.href = "SDB.html"; // 🔑 DASHBOARD
+  sessionStorage.setItem("token", res.token);
+  window.location.href = "SDB.html";
   return;
 }
-    msg.style.color="red";
-    msg.innerText =
-      res.status==="ALREADY_LOGGED_IN"
-        ? "You are already logged in from another device."
-        : res.status==="NOT_REGISTERED"
-        ? "Not registered."
-        : "Login failed. Please try again.";
 
-    btn.disabled=false;
+msg.style.color="red";
+
+if(res.status==="NOT_REGISTERED"){
+  msg.innerHTML =
+    'You are not registered. ' +
+    '<a href="../Reg/">Register here</a>';
+}
+else{
+  msg.innerText="Login failed. Please try again.";
+}
+
+btn.disabled=false;
   })
   .catch(()=>{
     msg.style.color="red";
