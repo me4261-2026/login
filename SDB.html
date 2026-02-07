@@ -73,7 +73,7 @@ button{
 }
 
 footer{
-  position:fixed;
+  position:static;
   bottom:0;left:0;right:0;
   background:#0f2027;
   color:#cfd8dc;
@@ -122,6 +122,49 @@ footer{
   border-top:4px solid #c0392b;
   border-radius:50%;
   animation:spin 1s linear infinite;
+}
+  @media (max-width: 600px){
+
+  body{
+    padding:16px 10px 20px;
+  }
+
+  .card{
+    padding:20px 18px;
+    border-radius:16px;
+  }
+
+  .header h1{
+    font-size:19px;
+  }
+
+  .header h2{
+    font-size:13px;
+  }
+
+  .welcomeText{
+    font-size:16px;
+  }
+
+  .attendanceValue{
+    font-size:22px;
+  }
+
+  button{
+    padding:12px;
+    font-size:14px;
+  }
+
+  footer{
+    position:static;     /* 🔑 IMPORTANT */
+    margin-top:18px;
+    font-size:12px;
+  }
+
+  .logoutBox{
+    width:85%;
+    padding:20px;
+  }
 }
 </style>
 </head>
