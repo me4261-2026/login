@@ -21,6 +21,11 @@ body{
   justify-content:center;
   padding:20px 10px 80px;
 }
+  .initial-loading{
+  color:#1565c0;     /* BLUE */
+  font-weight:700;
+  text-align:center;
+}
 .page{width:100%;max-width:520px}
 .card{
   background:#fff;
@@ -170,7 +175,9 @@ footer{
   <h2>ME4261</h2>
 </div>
 
-<div class="infoBox" id="loadingBox">Fetching your details… Please wait</div>
+<div class="infoBox initial-loading" id="loadingBox">
+  Fetching your details… Please wait
+</div>
 
 <div id="welcomeBox" style="display:none;margin-top:12px;text-align:center">
   <b id="welcomeText"></b>
