@@ -44,9 +44,6 @@ button:disabled{opacity:.6;cursor:not-allowed;}
 .btn-close{background:#7f8c8d;color:#fff;}
 
 .btn-blue{background:#1976d2;color:#fff;}
-.btn-green{background:#388e3c;color:#fff;}
-.btn-orange{background:#f57c00;color:#fff;}
-.btn-purple{background:#7b1fa2;color:#fff;}
 
 .section{display:none;margin-top:18px;}
 .testBlock{margin-top:14px;}
@@ -87,15 +84,6 @@ button:disabled{opacity:.6;cursor:not-allowed;}
 }
 .customList label{display:block;margin-bottom:8px;}
 
-.footer{
-  margin-top:28px;
-  text-align:center;
-  font-size:13px;
-  color:#5f6f78;
-  font-weight:600;
-}
-.footer div{font-size:12px;color:#7a8a93;}
-
 #loaderOverlay{
   position:fixed;
   inset:0;
@@ -124,35 +112,32 @@ button:disabled{opacity:.6;cursor:not-allowed;}
 <h1>Faculty Dashboard</h1>
 <h2>Energy Storage Technology · ME4261</h2>
 
-<!-- HOME -->
 <div id="home">
   <button class="btn-main" onclick="openClassTest()">Conduct Class Test</button>
   <button class="btn-red" onclick="logout()">Logout</button>
 </div>
 
-<!-- CLASS TEST -->
 <div id="classTest" class="section">
   <h2>Conduct Class Test</h2>
 
-  <!-- CT1 -->
   <div class="testBlock">
-    <button class="testBtn btn-blue" onclick="toggleTest('CT1')">Class Test – I</button>
+    <button class="testBtn btn-blue" onclick="toggleTest('CT1')">
+      Class Test – I
+    </button>
 
     <div id="CT1" class="testPanel">
 
-      <!-- ACTION -->
       <div class="subCard">
         <label class="radioRow">
-          <input type="radio" name="action_CT1" value="ENABLE" onclick="showEnable('CT1')">
+          <input type="radio" name="action_CT1" onclick="showEnable('CT1')">
           Enable Class Test
         </label>
         <label class="radioRow">
-          <input type="radio" name="action_CT1" value="EVALUATE" onclick="showEvaluate('CT1')">
+          <input type="radio" name="action_CT1" onclick="showEvaluate('CT1')">
           Evaluate Class Test
         </label>
       </div>
 
-      <!-- ENABLE -->
       <div id="enable_CT1" class="subCard" style="display:none;">
         <label class="radioRow">
           <input type="radio" name="enable_CT1" value="ALL" onclick="hideCustom('CT1')">
@@ -172,7 +157,6 @@ button:disabled{opacity:.6;cursor:not-allowed;}
         <button class="btn-main" onclick="enableTest('CT1')">Enable Test</button>
       </div>
 
-      <!-- EVALUATE -->
       <div id="eval_CT1" class="subCard" style="display:none;">
         <button class="btn-main" onclick="evaluateTest('CT1')">
           Evaluate & Publish Results
@@ -185,20 +169,17 @@ button:disabled{opacity:.6;cursor:not-allowed;}
   <button class="btn-close" onclick="closeSection()">Close</button>
 </div>
 
-<!-- LOADER -->
 <div id="loaderOverlay">
   <div class="spinner"></div>
   <div style="margin-top:12px;font-weight:600;">Loading…</div>
 </div>
 
-<div class="footer">
-  Developed by Dr. Rajesh Akula
-  <div>© 2026 · IIEST Shibpur</div>
-</div>
-
 </div>
 
 <script>
+/* ========= CONFIG ========= */
+const BACKEND = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
+
 /* ========= AUTH ========= */
 const facultyToken = sessionStorage.getItem("facultyToken");
 if(!facultyToken){
@@ -206,10 +187,23 @@ if(!facultyToken){
   location.replace("faculty_login.html");
 }
 
-/* ========= NAV ========= */
-const home = document.getElementById("home");
-const classTest = document.getElementById("classTest");
+/* ========= GLOBAL ========= */
+let allStudents = [];
 
+/* ========= LOAD STUDENTS ========= */
+fetch(BACKEND,{
+  method:"POST",
+  body:new URLSearchParams({
+    action:"getAllStudents",
+    token: facultyToken
+  })
+})
+.then(r=>r.json())
+.then(res=>{
+  if(res.status==="OK") allStudents = res.students;
+});
+
+/* ========= NAV ========= */
 function openClassTest(){
   home.style.display="none";
   classTest.style.display="block";
@@ -222,10 +216,10 @@ function closeSection(){
 /* ========= ACCORDION ========= */
 function toggleTest(id){
   document.querySelectorAll(".testPanel").forEach(p=>{
-    if(p.id !== id) p.style.display="none";
+    if(p.id!==id) p.style.display="none";
   });
-  const panel = document.getElementById(id);
-  panel.style.display = panel.style.display === "block" ? "none" : "block";
+  const p=document.getElementById(id);
+  p.style.display=p.style.display==="block"?"none":"block";
 }
 
 function showEnable(id){
@@ -233,42 +227,85 @@ function showEnable(id){
   document.getElementById("enable_"+id).style.display="block";
   document.getElementById("eval_"+id).style.display="none";
 }
-
 function showEvaluate(id){
   document.getElementById("eval_"+id).style.display="block";
   document.getElementById("enable_"+id).style.display="none";
 }
 
 function showCustom(id){
-  document.getElementById("custom_"+id).style.display="block";
-}
+  const box=document.getElementById("custom_"+id);
+  box.style.display="block";
 
+  if(box.innerHTML.trim()) return;
+
+  box.innerHTML = allStudents.map(s=>`
+    <label>
+      <input type="checkbox" value="${s.roll}">
+      ${s.roll} – ${s.name}
+    </label>
+  `).join("");
+}
 function hideCustom(id){
   document.getElementById("custom_"+id).style.display="none";
 }
 
-/* ========= CUSTOM STUDENT LIST (TEMP) ========= */
-document.getElementById("custom_CT1").innerHTML = `
-  <label><input type="checkbox" value="21ME001"> 21ME001 – Student A</label>
-  <label><input type="checkbox" value="21ME002"> 21ME002 – Student B</label>
-  <label><input type="checkbox" value="21ME003"> 21ME003 – Student C</label>
-`;
-
-/* ========= PLACEHOLDERS (BACKEND NEXT) ========= */
+/* ========= ENABLE TEST ========= */
 function enableTest(testId){
-  alert("Enable " + testId + " (backend hookup next)");
+  const mode=document.querySelector(`input[name="enable_${testId}"]:checked`);
+  if(!mode){ alert("Select enable mode"); return; }
+
+  let rolls="";
+  if(mode.value==="CUSTOM"){
+    const c=[...document.querySelectorAll(`#custom_${testId} input:checked`)];
+    if(!c.length){ alert("Select students"); return; }
+    rolls=c.map(x=>x.value).join(",");
+  }
+
+  showLoader();
+
+  fetch(BACKEND,{
+    method:"POST",
+    body:new URLSearchParams({
+      action:"enableClassTest",
+      token: facultyToken,
+      testId,
+      mode: mode.value,
+      rolls
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    hideLoader();
+    alert(res.status==="OK"?"Test Enabled":"Enable Failed");
+  });
 }
 
+/* ========= EVALUATE ========= */
 function evaluateTest(testId){
-  alert("Evaluate " + testId + " (backend hookup next)");
+  if(!confirm("Evaluate and publish results?")) return;
+  showLoader();
+
+  fetch(BACKEND,{
+    method:"POST",
+    body:new URLSearchParams({
+      action:"evaluateTest",
+      token: facultyToken,
+      testId
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    hideLoader();
+    alert(res.status==="EVALUATED"?"Results Published":"Evaluation Failed");
+  });
 }
 
 /* ========= LOADER ========= */
 function showLoader(){
-  document.getElementById("loaderOverlay").style.display="flex";
+  loaderOverlay.style.display="flex";
 }
 function hideLoader(){
-  document.getElementById("loaderOverlay").style.display="none";
+  loaderOverlay.style.display="none";
 }
 
 /* ========= LOGOUT ========= */
