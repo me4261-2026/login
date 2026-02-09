@@ -19,29 +19,25 @@ body{
   background:#fff;
   width:100%;
   max-width:900px;
-  margin:24px 12px;
-  padding:28px;
-  border-radius:14px;
+  margin:16px 10px;
+  padding:22px;
+  border-radius:16px;
   box-shadow:0 15px 40px rgba(0,0,0,.25);
 }
-h1{text-align:center;color:#e67e22;margin-bottom:6px;}
-h2{text-align:center;color:#555;font-size:15px;margin-bottom:22px;}
+h1{text-align:center;color:#e67e22;margin-bottom:4px;}
+h2{text-align:center;color:#555;font-size:14px;margin-bottom:20px;}
 
 button{
   width:100%;
   padding:14px;
-  margin-top:14px;
+  margin-top:12px;
   border:none;
-  border-radius:30px;
+  border-radius:14px;
   font-size:16px;
-  font-weight:600;
+  font-weight:700;
   cursor:pointer;
 }
-button:disabled{
-  background:#999;
-  cursor:not-allowed;
-  opacity:.6;
-}
+button:disabled{opacity:.6;cursor:not-allowed;}
 
 .btn-main{background:linear-gradient(135deg,#f39c12,#e67e22);color:#fff;}
 .btn-red{background:#c0392b;color:#fff;}
@@ -52,20 +48,48 @@ button:disabled{
 .btn-orange{background:#f57c00;color:#fff;}
 .btn-purple{background:#7b1fa2;color:#fff;}
 
-.section{display:none;margin-top:24px;}
+.section{display:none;margin-top:18px;}
 
-label{font-weight:600;margin-top:12px;display:block;}
-input[type=radio], input[type=checkbox]{margin-right:8px;}
+.testBlock{margin-top:14px;}
+.testBtn{font-size:16px;border-radius:14px;}
 
-.box{
-  background:#f8f9fa;
-  padding:16px;
-  border-radius:12px;
-  margin-top:18px;
+.testPanel{
+  display:none;
+  margin-top:10px;
+  background:#f3f5f7;
+  border-radius:14px;
+  padding:12px;
 }
 
+.subCard{
+  background:#fff;
+  border-radius:12px;
+  padding:14px;
+  margin-top:12px;
+  box-shadow:0 6px 16px rgba(0,0,0,0.08);
+}
+
+.radioRow{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 0;
+  font-weight:600;
+}
+
+.customList{
+  display:none;
+  margin-top:10px;
+  padding:10px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  max-height:160px;
+  overflow:auto;
+}
+.customList label{display:block;margin-bottom:8px;}
+
 .footer{
-  margin-top:32px;
+  margin-top:28px;
   text-align:center;
   font-size:13px;
   color:#5f6f78;
@@ -92,6 +116,11 @@ input[type=radio], input[type=checkbox]{margin-right:8px;}
   animation:spin 1s linear infinite;
 }
 @keyframes spin{to{transform:rotate(360deg);}}
+
+@media(max-width:600px){
+  h1{font-size:20px;}
+  button{font-size:15px;}
+}
 </style>
 </head>
 
@@ -107,45 +136,65 @@ input[type=radio], input[type=checkbox]{margin-right:8px;}
   <button class="btn-red" onclick="logout()">Logout</button>
 </div>
 
-<!-- CLASS TEST PANEL -->
+<!-- CLASS TEST SECTION -->
 <div id="classTest" class="section">
   <h2>Conduct Class Test</h2>
 
-  <!-- TEST SELECTION -->
-  <div class="box">
-    <button class="btn-blue" onclick="selectTest('CT1')">Class Test – I</button>
-    <button class="btn-green" onclick="selectTest('CT2')">Class Test – II</button>
-    <button class="btn-orange" onclick="selectTest('CT3')">Class Test – III</button>
-    <button class="btn-purple" onclick="selectTest('CT4')">Class Test – IV</button>
-  </div>
+  <!-- CLASS TEST I -->
+  <div class="testBlock">
+    <button class="testBtn btn-blue" onclick="toggleTest('CT1')">Class Test – I</button>
+    <div id="CT1" class="testPanel">
+      <div class="subCard">
+        <label class="radioRow">
+          <input type="radio" name="action_CT1" onclick="showEnable('CT1')"> Enable Class Test
+        </label>
+        <label class="radioRow">
+          <input type="radio" name="action_CT1" onclick="showEvaluate('CT1')"> Evaluate Class Test
+        </label>
+      </div>
 
-  <!-- ACTION -->
-  <div id="actionPanel" class="box" style="display:none;">
-    <label><input type="radio" name="action" onclick="showEnable()"> Enable Class Test</label>
-    <label><input type="radio" name="action" onclick="showEvaluate()"> Evaluate Class Test</label>
-  </div>
+      <div id="enable_CT1" class="subCard" style="display:none;">
+        <label class="radioRow">
+          <input type="radio" name="enable_CT1" onclick="hideCustom('CT1')"> Enable for all students
+        </label>
+        <label class="radioRow">
+          <input type="radio" name="enable_CT1" onclick="hideCustom('CT1')"> Enable for attended students
+        </label>
+        <label class="radioRow">
+          <input type="radio" name="enable_CT1" onclick="showCustom('CT1')"> Custom selection
+        </label>
 
-  <!-- ENABLE -->
-  <div id="enablePanel" class="box" style="display:none;">
-    <label><input type="radio" name="enableMode"> Enable for all students</label>
-    <label><input type="radio" name="enableMode"> Enable for attended students</label>
-    <label><input type="radio" name="enableMode" onclick="showCustom()"> Custom selection</label>
+        <div id="custom_CT1" class="customList">
+          <label><input type="checkbox"> 21ME001 – Student A</label>
+          <label><input type="checkbox"> 21ME002 – Student B</label>
+          <label><input type="checkbox"> 21ME003 – Student C</label>
+        </div>
 
-    <div id="customList" style="display:none;margin-top:10px;
-         max-height:160px;overflow:auto;border:1px solid #ccc;padding:10px;">
-      <!-- placeholder -->
-      <label><input type="checkbox"> 21ME001 – Student A</label><br>
-      <label><input type="checkbox"> 21ME002 – Student B</label><br>
-      <label><input type="checkbox"> 21ME003 – Student C</label>
+        <button class="btn-main" onclick="dummy()">Enable Test</button>
+      </div>
+
+      <div id="eval_CT1" class="subCard" style="display:none;">
+        <button class="btn-main" onclick="dummy()">Evaluate & Publish Results</button>
+      </div>
     </div>
-
-    <button class="btn-main" onclick="dummy()">Enable Test</button>
   </div>
 
-  <!-- EVALUATE -->
-  <div id="evalPanel" class="box" style="display:none;">
-    <p>Evaluate selected class test and publish results.</p>
-    <button class="btn-main" onclick="dummy()">Evaluate & Publish</button>
+  <!-- CLASS TEST II -->
+  <div class="testBlock">
+    <button class="testBtn btn-green" onclick="toggleTest('CT2')">Class Test – II</button>
+    <div id="CT2" class="testPanel"><div class="subCard">Upcoming</div></div>
+  </div>
+
+  <!-- CLASS TEST III -->
+  <div class="testBlock">
+    <button class="testBtn btn-orange" onclick="toggleTest('CT3')">Class Test – III</button>
+    <div id="CT3" class="testPanel"><div class="subCard">Upcoming</div></div>
+  </div>
+
+  <!-- CLASS TEST IV -->
+  <div class="testBlock">
+    <button class="testBtn btn-purple" onclick="toggleTest('CT4')">Class Test – IV</button>
+    <div id="CT4" class="testPanel"><div class="subCard">Upcoming</div></div>
   </div>
 
   <button class="btn-close" onclick="closeSection()">Close</button>
@@ -185,26 +234,28 @@ function closeSection(){
   home.style.display="block";
 }
 
-/* ========= STATE ========= */
-let selectedTest = null;
-
-function selectTest(t){
-  selectedTest = t;
-  document.getElementById("actionPanel").style.display="block";
-  document.getElementById("enablePanel").style.display="none";
-  document.getElementById("evalPanel").style.display="none";
+/* ========= ACCORDION ========= */
+function toggleTest(id){
+  document.querySelectorAll(".testPanel").forEach(p=>{
+    if(p.id !== id) p.style.display="none";
+  });
+  const panel = document.getElementById(id);
+  panel.style.display = panel.style.display === "block" ? "none" : "block";
 }
 
-function showEnable(){
-  document.getElementById("enablePanel").style.display="block";
-  document.getElementById("evalPanel").style.display="none";
+function showEnable(id){
+  document.getElementById("enable_"+id).style.display="block";
+  document.getElementById("eval_"+id).style.display="none";
 }
-function showEvaluate(){
-  document.getElementById("evalPanel").style.display="block";
-  document.getElementById("enablePanel").style.display="none";
+function showEvaluate(id){
+  document.getElementById("eval_"+id).style.display="block";
+  document.getElementById("enable_"+id).style.display="none";
 }
-function showCustom(){
-  document.getElementById("customList").style.display="block";
+function showCustom(id){
+  document.getElementById("custom_"+id).style.display="block";
+}
+function hideCustom(id){
+  document.getElementById("custom_"+id).style.display="none";
 }
 
 function dummy(){
