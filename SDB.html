@@ -233,7 +233,7 @@ Developed by Dr. Rajesh Akula
 </footer>
 
 <script>
-const BACKEND="https://script.google.com/macros/s/AKfycbwXtz_5RkjpLHjih8vJRy_aMTSO6vXmx027ohtCqZF8b7sDVgxrhL8KXR2SZkueXcYJ/exec";
+const BACKEND="https://script.google.com/macros/s/AKfycbyxpjtZvQ503UEE4ado5bzL8t0ZKn5N7eBtaKpvuAQTvhPg7Ei8_mDiCXvYM4tAkRFf/exec";
 const token=sessionStorage.getItem("token");
 const testsBox = document.getElementById("testsBox");
 const resultsBox = document.getElementById("resultsBox");
@@ -318,23 +318,51 @@ function renderDates(container, list, cls){
     .join("");
 }
 function toggleClassTests(){
-  if(testsBox.style.display==="block"){ testsBox.style.display="none"; return; }
+  if(testsBox.style.display==="block"){
+    testsBox.style.display="none";
+    return;
+  }
+
   closeAll();
   testsLoading.style.display="block";
-  fetch(BACKEND,{method:"POST",body:new URLSearchParams({action:"getStudentTestStatus",token})})
+
+  fetch(BACKEND,{
+    method:"POST",
+    body:new URLSearchParams({
+      action:"getStudentTestStatus",
+      token
+    })
+  })
   .then(r=>r.json())
   .then(res=>{
     testsLoading.style.display="none";
     testsBox.style.display="block";
-    testsBox.innerHTML=res.tests.map(t=>{
-      if(t.attempted) return `${t.name} (Completed)`;
-     if(t.enabled)
-  return `
-    <button class="btn-tests"
-      onclick="startTestConfirm('${t.id}')">
-      ${t.name} – START
-    </button>`;
+
+    testsBox.innerHTML = res.tests.map(t => {
+
+      // 1️⃣ Student already attempted
+      if(t.attempted){
+        return `${t.name} (Completed)`;
+      }
+
+      // 2️⃣ Enabled for this student
+      if(t.enabled){
+        return `
+          <button class="btn-tests"
+            onclick="startTestConfirm('${t.id}')">
+            ${t.name} – START
+          </button>
+        `;
+      }
+
+      // 3️⃣ Someone else attempted
+      if(t.globallyAttempted){
+        return `${t.name} (Completed)`;
+      }
+
+      // 4️⃣ Nobody attempted yet
       return `${t.name} (Upcoming)`;
+
     }).join("<br>");
   });
 }
