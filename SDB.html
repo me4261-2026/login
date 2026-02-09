@@ -328,13 +328,33 @@ function toggleClassTests(){
     testsBox.style.display="block";
     testsBox.innerHTML=res.tests.map(t=>{
       if(t.attempted) return `${t.name} (Completed)`;
-      if(t.enabled)
-  return `<button class="btn-tests" onclick="confirmStartTest('${t.id}')">
-            ${t.name} – START
-          </button>`;
+     if(t.enabled)
+  return `
+    <button class="btn-tests"
+      onclick="startTestConfirm('${t.id}')">
+      ${t.name} – START
+    </button>`;
       return `${t.name} (Upcoming)`;
     }).join("<br>");
   });
+}
+  function startTestConfirm(testId){
+  const ok = confirm(
+    "Are you sure you want to start the test?\n\n" +
+    "• Test timer will start immediately\n" +
+    "• You cannot reattempt\n" +
+    "• Leaving the page will auto-submit"
+  );
+
+  if(!ok) return;
+
+  // Optional UX polish
+  testsLoading.style.display = "block";
+
+  // Small delay = smoother UX
+  setTimeout(()=>{
+    location.href = `test.html?test=${testId}`;
+  }, 300);
 }
 function prettyDate(d){
   const dt = new Date(d);
