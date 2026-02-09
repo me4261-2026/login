@@ -73,7 +73,42 @@ button{
 }
 .present{background:#e8f5e9;color:#1b5e20}
 .absent{background:#fdecea;color:#b71c1c}
+.attendanceBox{
+  padding:14px;
+  border-radius:14px;
+  font-weight:600;
+}
 
+.presentBox{
+  background:#e8f5e9;
+  border:1px solid #c8e6c9;
+  color:#1b5e20;
+}
+
+.absentBox{
+  background:#fdecea;
+  border:1px solid #f5c6cb;
+  color:#b71c1c;
+}
+
+.dateChip{
+  display:inline-block;
+  padding:6px 10px;
+  margin:6px 6px 0 0;
+  border-radius:8px;
+  font-size:13px;
+  font-weight:600;
+}
+
+.dateGreen{
+  background:#c8e6c9;
+  color:#1b5e20;
+}
+
+.dateRed{
+  background:#ffcdd2;
+  color:#b71c1c;
+}
 footer{
   position:fixed;
   bottom:0;left:0;right:0;
@@ -120,16 +155,22 @@ footer{
 <div id="resultsBox" class="dropdown"></div>
 
 <!-- ATTENDANCE -->
-<button class="btn-attendance" onclick="toggleAttendance()">View Attendance Details</button>
-<div id="attendanceBox" class="dropdown">
-  <div class="box present">
+<button class="btn-attendance" onclick="toggleAttendance()">
+  View Attendance Details
+</button>
+
+<div id="attendanceBox" style="display:none; margin-top:16px;">
+
+  <div class="attendanceBox presentBox">
     <b>Present</b>
     <div id="presentDates"></div>
   </div>
-  <div class="box absent">
+
+  <div class="attendanceBox absentBox" style="margin-top:12px">
     <b>Absent</b>
     <div id="absentDates"></div>
   </div>
+
 </div>
 
 <button class="btn-logout" onclick="logout()">Logout</button>
@@ -146,11 +187,16 @@ Developed by Dr. Rajesh Akula
 <script>
 const BACKEND="https://script.google.com/macros/s/AKfycbzVJ2lMkwvArC8f8cTgKVsNuWXOxVAQnkmNWZH7NzdOGQvgIyDjKU9NVRXhSdmiDes5/exec";
 const token=sessionStorage.getItem("token");
-
+const testsBox = document.getElementById("testsBox");
+const resultsBox = document.getElementById("resultsBox");
+const attendanceBox = document.getElementById("attendanceBox");
+const testsLoading = document.getElementById("testsLoading");
+const resultsLoading = document.getElementById("resultsLoading");
 function closeAll(){
-  ["testsBox","resultsBox","attendanceBox"].forEach(id=>{
-    document.getElementById(id).style.display="none";
-  });
+  testsBox.style.display="none";
+  resultsBox.style.display="none";
+  attendanceBox.style.display="none";
+  attendanceOpen = false;
 }
 
 Promise.all([
@@ -165,20 +211,54 @@ Promise.all([
   attendanceValue.className="attendanceValue "+(a.percent>=75?"attendance-good":"attendance-bad");
 });
 
-function toggleAttendance(){
-  const box=attendanceBox;
-  if(box.style.display==="block"){ box.style.display="none"; return; }
-  closeAll();
-  box.style.display="block";
+let attendanceOpen = false;
 
-  fetch(BACKEND,{method:"POST",body:new URLSearchParams({action:"getMyAttendanceDetails",token})})
+function toggleAttendance(){
+
+  const box = document.getElementById("attendanceBox");
+
+  if(attendanceOpen){
+    box.style.display = "none";
+    attendanceOpen = false;
+    return;
+  }
+
+  closeAll();                 // closes Class Tests / Results
+  box.style.display = "block";
+  attendanceOpen = true;
+
+  document.getElementById("presentDates").innerHTML = "";
+  document.getElementById("absentDates").innerHTML  = "";
+
+  fetch(BACKEND,{
+    method:"POST",
+    body:new URLSearchParams({
+      action:"getMyAttendanceDetails",
+      token
+    })
+  })
   .then(r=>r.json())
   .then(res=>{
-    presentDates.innerHTML=res.attended.join("<br>")||"—";
-    absentDates.innerHTML=res.absent.join("<br>")||"—";
+    if(res.status !== "OK"){
+      presentDates.innerHTML = "<i>No data</i>";
+      absentDates.innerHTML  = "<i>No data</i>";
+      return;
+    }
+
+    renderDates(presentDates, res.attended, "dateGreen");
+    renderDates(absentDates,  res.absent,   "dateRed");
   });
 }
+function renderDates(container, list, cls){
+  if(!list || !list.length){
+    container.innerHTML = "<i>No records</i>";
+    return;
+  }
 
+  container.innerHTML = list
+    .map(d => `<span class="dateChip ${cls}">${prettyDate(d)}</span>`)
+    .join("");
+}
 function toggleClassTests(){
   if(testsBox.style.display==="block"){ testsBox.style.display="none"; return; }
   closeAll();
@@ -195,7 +275,16 @@ function toggleClassTests(){
     }).join("<br>");
   });
 }
+function prettyDate(d){
+  const dt = new Date(d);
+  const day = dt.getDate();
+  const suf =
+    day % 10 === 1 && day !== 11 ? "st" :
+    day % 10 === 2 && day !== 12 ? "nd" :
+    day % 10 === 3 && day !== 13 ? "rd" : "th";
 
+  return `${day}${suf} ${dt.toLocaleString("en",{month:"short"})} ${dt.getFullYear()}`;
+}
 function toggleResults(){
   if(resultsBox.style.display==="block"){ resultsBox.style.display="none"; return; }
   closeAll();
@@ -213,8 +302,13 @@ function toggleResults(){
 }
 
 function logout(){
-  sessionStorage.clear();
-  location.replace("index.html");
+  fetch(BACKEND,{
+    method:"POST",
+    body:new URLSearchParams({ action:"logout", token })
+  }).finally(()=>{
+    sessionStorage.clear();
+    location.replace("index.html");
+  });
 }
 </script>
 </body>
