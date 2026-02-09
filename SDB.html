@@ -63,7 +63,12 @@ button{
 .btn-logout{background:#c62828;color:#fff}
 
 .dropdown{margin-top:10px;display:none}
-.loading{color:#1565c0;font-weight:700;text-align:center;margin-top:10px}
+.loading{
+  color:#c62828;        /* RED */
+  font-weight:700;
+  text-align:center;
+  margin-top:10px;
+}
 
 .box{
   padding:12px;
@@ -192,7 +197,9 @@ footer{
 <button class="btn-attendance" onclick="toggleAttendance()">
   View Attendance Details
 </button>
-
+<div id="attendanceLoading" class="loading" style="display:none">
+  Loading… Please wait
+</div>
 <div id="attendanceBox" style="display:none; margin-top:16px;">
 
   <div class="attendanceBox presentBox">
@@ -249,20 +256,26 @@ let attendanceOpen = false;
 
 function toggleAttendance(){
 
-  const box = document.getElementById("attendanceBox");
+  const box = attendanceBox;
+  const loader = document.getElementById("attendanceLoading");
 
+  // If already open → close
   if(attendanceOpen){
     box.style.display = "none";
+    loader.style.display = "none";
     attendanceOpen = false;
     return;
   }
 
-  closeAll();                 // closes Class Tests / Results
-  box.style.display = "block";
+  closeAll();                 // close other dropdowns
   attendanceOpen = true;
 
-  document.getElementById("presentDates").innerHTML = "";
-  document.getElementById("absentDates").innerHTML  = "";
+  // SHOW loader, HIDE content
+  loader.style.display = "block";
+  box.style.display = "none";
+
+  presentDates.innerHTML = "";
+  absentDates.innerHTML  = "";
 
   fetch(BACKEND,{
     method:"POST",
@@ -273,6 +286,10 @@ function toggleAttendance(){
   })
   .then(r=>r.json())
   .then(res=>{
+
+    loader.style.display = "none";
+    box.style.display = "block";
+
     if(res.status !== "OK"){
       presentDates.innerHTML = "<i>No data</i>";
       absentDates.innerHTML  = "<i>No data</i>";
