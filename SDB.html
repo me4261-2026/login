@@ -254,7 +254,13 @@ footer{
             text-align:center;">
   Loading… Please wait
 </div>
+<button class="btn-attendance" onclick="openClassTests()">
+  Class Tests
+</button>
 
+<button class="btn-attendance" onclick="openResults()">
+  Check Results
+</button>
 <div id="attendancePanel" style="display:none; margin-top:16px;">
 
   <div class="attendanceBox presentBox">
@@ -288,7 +294,7 @@ footer{
 
 <script>
 const BACKEND =
-"https://script.google.com/macros/s/AKfycbyXViYDvQWRJTNjSGRrN4OiKtuQ_b-zfst1UNqmNs2-CFRFLB70pX1xSx5-ZjIS18vv/exec";
+"https://script.google.com/macros/s/AKfycbwrnoG0gWCDnNp4lVxL3UijYejgNzWT43FJQcutqM53wSmWTrOcuSlPRhh9BzPNnF4/exec";
 
 const token = sessionStorage.getItem("token");
 if(!token){
@@ -335,6 +341,53 @@ document.getElementById("welcomeBox").style.display = "block";
     day % 10 === 3 && day !== 13 ? "rd" : "th";
 
   return `${day}${suf} ${dt.toLocaleString("en",{month:"short"})} ${dt.getFullYear()}`;
+}
+  function openClassTests(){
+  fetch(BACKEND,{
+    method:"POST",
+    body:new URLSearchParams({
+      action:"getStudentTestStatus",
+      token
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    let msg = res.tests.map(t=>{
+      if(t.attempted)
+        return `${t.name} (Completed)`;
+      if(t.enabled)
+        return `<button onclick="startTest('${t.id}')">${t.name} – START</button>`;
+      return `${t.name} (Upcoming)`;
+    }).join("<br><br>");
+
+    document.body.innerHTML =
+      `<div style="padding:20px">${msg}</div>`;
+  });
+}
+
+function startTest(id){
+  if(!confirm("Are you ready to take the test?\nDuration: 5 minutes")) return;
+  location.href = `test.html?test=${id}`;
+}
+
+function openResults(){
+  fetch(BACKEND,{
+    method:"POST",
+    body:new URLSearchParams({
+      action:"getResults",
+      token
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(!res.results.length){
+      alert("Results not published yet");
+      return;
+    }
+    alert(
+      res.results.map(r=>`${r[1]} → ${r[2]} marks`).join("\n")
+    );
+  });
 }
 function viewAttendance(){
 
