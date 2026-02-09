@@ -49,7 +49,6 @@ button:disabled{opacity:.6;cursor:not-allowed;}
 .btn-purple{background:#7b1fa2;color:#fff;}
 
 .section{display:none;margin-top:18px;}
-
 .testBlock{margin-top:14px;}
 .testBtn{font-size:16px;border-radius:14px;}
 
@@ -116,11 +115,6 @@ button:disabled{opacity:.6;cursor:not-allowed;}
   animation:spin 1s linear infinite;
 }
 @keyframes spin{to{transform:rotate(360deg);}}
-
-@media(max-width:600px){
-  h1{font-size:20px;}
-  button{font-size:15px;}
-}
 </style>
 </head>
 
@@ -136,66 +130,56 @@ button:disabled{opacity:.6;cursor:not-allowed;}
   <button class="btn-red" onclick="logout()">Logout</button>
 </div>
 
-<!-- CLASS TEST SECTION -->
+<!-- CLASS TEST -->
 <div id="classTest" class="section">
   <h2>Conduct Class Test</h2>
 
-  <!-- CLASS TEST I -->
+  <!-- CT1 -->
   <div class="testBlock">
     <button class="testBtn btn-blue" onclick="toggleTest('CT1')">Class Test – I</button>
+
     <div id="CT1" class="testPanel">
+
+      <!-- ACTION -->
       <div class="subCard">
         <label class="radioRow">
-          <input type="radio" name="action_CT1" onclick="showEnable('CT1')"> Enable Class Test
+          <input type="radio" name="action_CT1" value="ENABLE" onclick="showEnable('CT1')">
+          Enable Class Test
         </label>
         <label class="radioRow">
-          <input type="radio" name="action_CT1" onclick="showEvaluate('CT1')"> Evaluate Class Test
+          <input type="radio" name="action_CT1" value="EVALUATE" onclick="showEvaluate('CT1')">
+          Evaluate Class Test
         </label>
       </div>
 
+      <!-- ENABLE -->
       <div id="enable_CT1" class="subCard" style="display:none;">
         <label class="radioRow">
-          <input type="radio" name="enable_CT1" onclick="hideCustom('CT1')"> Enable for all students
+          <input type="radio" name="enable_CT1" value="ALL" onclick="hideCustom('CT1')">
+          Enable for all students
         </label>
         <label class="radioRow">
-          <input type="radio" name="enable_CT1" onclick="hideCustom('CT1')"> Enable for attended students
+          <input type="radio" name="enable_CT1" value="ATTENDED" onclick="hideCustom('CT1')">
+          Enable for attended students
         </label>
         <label class="radioRow">
-          <input type="radio" name="enable_CT1" onclick="showCustom('CT1')"> Custom selection
+          <input type="radio" name="enable_CT1" value="CUSTOM" onclick="showCustom('CT1')">
+          Custom selection
         </label>
 
-        <div id="custom_CT1" class="customList">
-          <label><input type="checkbox"> 21ME001 – Student A</label>
-          <label><input type="checkbox"> 21ME002 – Student B</label>
-          <label><input type="checkbox"> 21ME003 – Student C</label>
-        </div>
+        <div id="custom_CT1" class="customList"></div>
 
-        <button class="btn-main" onclick="dummy()">Enable Test</button>
+        <button class="btn-main" onclick="enableTest('CT1')">Enable Test</button>
       </div>
 
+      <!-- EVALUATE -->
       <div id="eval_CT1" class="subCard" style="display:none;">
-        <button class="btn-main" onclick="dummy()">Evaluate & Publish Results</button>
+        <button class="btn-main" onclick="evaluateTest('CT1')">
+          Evaluate & Publish Results
+        </button>
       </div>
+
     </div>
-  </div>
-
-  
-  <!-- CLASS TEST II -->
-  <div class="testBlock">
-    <button class="testBtn btn-green" onclick="toggleTest('CT2')">Class Test – II</button>
-    <div id="CT2" class="testPanel"><div class="subCard">Upcoming</div></div>
-  </div>
-
-  <!-- CLASS TEST III -->
-  <div class="testBlock">
-    <button class="testBtn btn-orange" onclick="toggleTest('CT3')">Class Test – III</button>
-    <div id="CT3" class="testPanel"><div class="subCard">Upcoming</div></div>
-  </div>
-
-  <!-- CLASS TEST IV -->
-  <div class="testBlock">
-    <button class="testBtn btn-purple" onclick="toggleTest('CT4')">Class Test – IV</button>
-    <div id="CT4" class="testPanel"><div class="subCard">Upcoming</div></div>
   </div>
 
   <button class="btn-close" onclick="closeSection()">Close</button>
@@ -245,22 +229,46 @@ function toggleTest(id){
 }
 
 function showEnable(id){
+  hideCustom(id);
   document.getElementById("enable_"+id).style.display="block";
   document.getElementById("eval_"+id).style.display="none";
 }
+
 function showEvaluate(id){
   document.getElementById("eval_"+id).style.display="block";
   document.getElementById("enable_"+id).style.display="none";
 }
+
 function showCustom(id){
   document.getElementById("custom_"+id).style.display="block";
 }
+
 function hideCustom(id){
   document.getElementById("custom_"+id).style.display="none";
 }
 
-function dummy(){
-  alert("UI ready ✔\nBackend will be connected in STEP 2");
+/* ========= CUSTOM STUDENT LIST (TEMP) ========= */
+document.getElementById("custom_CT1").innerHTML = `
+  <label><input type="checkbox" value="21ME001"> 21ME001 – Student A</label>
+  <label><input type="checkbox" value="21ME002"> 21ME002 – Student B</label>
+  <label><input type="checkbox" value="21ME003"> 21ME003 – Student C</label>
+`;
+
+/* ========= PLACEHOLDERS (BACKEND NEXT) ========= */
+function enableTest(testId){
+  alert("Enable " + testId + " (backend hookup next)");
+}
+
+function evaluateTest(testId){
+  alert("Evaluate " + testId + " (backend hookup next)");
+}
+
+/* ========= LOADER ========= */
+function showLoader(){
+  document.getElementById("loaderOverlay").style.display="flex";
+}
+function hideLoader(){
+  document.getElementById("loaderOverlay").style.display="none";
 }
 
 /* ========= LOGOUT ========= */
