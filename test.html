@@ -53,19 +53,28 @@ button{
   background:#1565c0;
   color:#fff;
 }
-button:disabled{
-  background:#999;
-}
+button:disabled{background:#999;}
 </style>
 </head>
 
 <body>
 
 <div class="card">
-  <div class="timer" id="timer">--:--</div>
-  <div class="question" id="questionText"></div>
-  <div id="options"></div>
-  <button id="nextBtn" onclick="next()">Next</button>
+
+  <!-- LOADING -->
+  <div id="loadingMsg"
+       style="text-align:center;font-weight:700;color:#c62828;">
+    Loading… Please wait
+  </div>
+
+  <!-- TEST UI -->
+  <div id="testUI" style="display:none;">
+    <div class="timer" id="timer">05:00</div>
+    <div class="question" id="questionText"></div>
+    <div id="options"></div>
+    <button id="nextBtn" onclick="next()">Next</button>
+  </div>
+
 </div>
 
 <script>
@@ -78,67 +87,69 @@ if(!token || !testId){
   location.replace("index.html");
 }
 
-let questions=[], index=0, answers={}, selected=null;
-let timeLeft=0, timerHandle;
+/* CONFIRM START */
+if(!confirm("Are you sure you want to start the test?\n\nOnce started, you cannot reattempt.")){
+  location.replace("student_dashboard.html");
+}
 
-/* ===== START TEST ===== */
+let questions = [];
+let index = 0;
+let answers = {};
+let selected = null;
+let timeLeft = 5 * 60;   // 5 MINUTES
+let timerHandle;
+let submitted = false;
+
+/* START TEST */
 fetch(BACKEND,{
   method:"POST",
-  body:new URLSearchParams({
-    action:"startTest",
-    token,
-    testId
-  })
+  body:new URLSearchParams({ action:"startTest", token, testId })
 })
 .then(r=>r.json())
 .then(res=>{
-  if(res.status!=="STARTED"){
-    alert("You cannot attempt this test again");
+  if(res.status !== "STARTED"){
+    alert("You cannot attempt this test");
     location.replace("student_dashboard.html");
     return;
   }
-  timeLeft = res.duration * 60;
-  startTimer();
   loadQuestions();
+  startTimer();
 });
 
-/* ===== LOAD QUESTIONS ===== */
+/* LOAD QUESTIONS */
 function loadQuestions(){
-  fetch(BACKEND,{
-    method:"POST",
-    body:new URLSearchParams({
-      action:"getQuestions",
-      token,
-      testId
-    })
-  })
-  .then(r=>r.json())
-  .then(res=>{
-    questions = res.questions;
-    render();
-  });
+  fetch(`${BACKEND}?action=getQuestions&testId=${testId}`)
+    .then(r=>r.json())
+    .then(res=>{
+      questions = res.questions;
+
+      document.getElementById("loadingMsg").style.display = "none";
+      document.getElementById("testUI").style.display = "block";
+
+      render();
+    });
 }
 
-/* ===== TIMER ===== */
+/* TIMER */
 function startTimer(){
   timerHandle = setInterval(()=>{
     timeLeft--;
     const m = Math.floor(timeLeft/60);
-    const s = timeLeft%60;
+    const s = timeLeft % 60;
     timer.innerText =
       `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
 
-    if(timeLeft<=0){
+    if(timeLeft <= 0){
       clearInterval(timerHandle);
       submit(true);
     }
   },1000);
 }
 
-/* ===== RENDER QUESTION ===== */
+/* RENDER QUESTION */
 function render(){
   const q = questions[index];
-  selected=null;
+  selected = null;
 
   questionText.innerText = `Q${index+1}. ${q.q}`;
   options.innerHTML = ["A","B","C","D"].map(o=>`
@@ -147,17 +158,19 @@ function render(){
     </div>
   `).join("");
 
-  nextBtn.innerText = (index===questions.length-1) ? "Submit" : "Next";
+  nextBtn.innerText =
+    index === questions.length-1 ? "Submit" : "Next";
 }
 
-/* ===== PICK OPTION ===== */
+/* PICK OPTION */
 function pick(v,el){
-  document.querySelectorAll(".option").forEach(o=>o.classList.remove("selected"));
+  document.querySelectorAll(".option")
+    .forEach(o=>o.classList.remove("selected"));
   el.classList.add("selected");
   selected = v;
 }
 
-/* ===== NEXT / SUBMIT ===== */
+/* NEXT / SUBMIT */
 function next(){
   if(!selected){
     alert("Select an option");
@@ -174,8 +187,11 @@ function next(){
   }
 }
 
-/* ===== SUBMIT ===== */
+/* SUBMIT */
 function submit(auto){
+  if(submitted) return;
+  submitted = true;
+
   clearInterval(timerHandle);
 
   fetch(BACKEND,{
@@ -193,7 +209,7 @@ function submit(auto){
   });
 }
 
-/* ===== AUTO SUBMIT RULES ===== */
+/* AUTO SUBMIT RULES */
 document.addEventListener("visibilitychange",()=>{
   if(document.hidden) submit(true);
 });
