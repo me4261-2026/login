@@ -22,7 +22,7 @@ body{
 }
 .timer{
   text-align:center;
-  font-size:20px;
+  font-size:22px;
   font-weight:800;
   color:#c62828;
   margin-bottom:14px;
@@ -32,8 +32,8 @@ body{
   margin-bottom:12px;
 }
 .option{
-  padding:10px;
-  margin-top:8px;
+  padding:12px;
+  margin-top:10px;
   border-radius:10px;
   border:2px solid #ddd;
   cursor:pointer;
@@ -43,33 +43,33 @@ body{
   background:#e3f2fd;
 }
 button{
-  margin-top:16px;
+  margin-top:18px;
   width:100%;
-  padding:12px;
+  padding:14px;
   border:none;
   border-radius:30px;
   font-weight:700;
-  font-size:15px;
+  font-size:16px;
   background:#1565c0;
   color:#fff;
 }
-button:disabled{ background:#999; }
+button:disabled{
+  background:#999;
+}
 </style>
 </head>
 
 <body>
 
 <div class="card">
-  <div class="timer" id="timer">05:00</div>
+  <div class="timer" id="timer">--:--</div>
   <div class="question" id="questionText"></div>
   <div id="options"></div>
   <button id="nextBtn" onclick="next()">Next</button>
 </div>
 
 <script>
-const BACKEND =
-"https://script.google.com/macros/s/AKfycbwKqCMgfSruiboypah3chE2B4rg2pg9XjfItboXqJMBOpcdSCapNsioKicWWUGYTYQc/exec";
-
+const BACKEND = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
 const token = sessionStorage.getItem("token");
 const testId = new URLSearchParams(location.search).get("test");
 
@@ -78,94 +78,105 @@ if(!token || !testId){
   location.replace("index.html");
 }
 
-let questions=[], idx=0, answers={}, selected=null;
-let timeLeft=300, timerId, submitted=false;
+let questions=[], index=0, answers={}, selected=null;
+let timeLeft=0, timerHandle;
 
-/* START TEST */
+/* ===== START TEST ===== */
 fetch(BACKEND,{
   method:"POST",
-  body:new URLSearchParams({action:"startTest", token, testId})
+  body:new URLSearchParams({
+    action:"startTest",
+    token,
+    testId
+  })
 })
 .then(r=>r.json())
 .then(res=>{
   if(res.status!=="STARTED"){
-    alert("You cannot attempt this test");
+    alert("You cannot attempt this test again");
     location.replace("student_dashboard.html");
     return;
   }
-  loadQuestions();
+  timeLeft = res.duration * 60;
   startTimer();
+  loadQuestions();
 });
 
-/* LOAD QUESTIONS */
+/* ===== LOAD QUESTIONS ===== */
 function loadQuestions(){
   fetch(BACKEND,{
     method:"POST",
-    body:new URLSearchParams({action:"getQuestions", token, testId})
+    body:new URLSearchParams({
+      action:"getQuestions",
+      token,
+      testId
+    })
   })
   .then(r=>r.json())
   .then(res=>{
-    if(res.status!=="OK"){
-      alert("Failed to load questions");
-      location.replace("student_dashboard.html");
-      return;
-    }
     questions = res.questions;
-    show();
+    render();
   });
 }
 
-/* SHOW QUESTION */
-function show(){
-  const q = questions[idx];
-  selected = null;
+/* ===== TIMER ===== */
+function startTimer(){
+  timerHandle = setInterval(()=>{
+    timeLeft--;
+    const m = Math.floor(timeLeft/60);
+    const s = timeLeft%60;
+    timer.innerText =
+      `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
 
-  questionText.innerText = `Q${idx+1}. ${q.q}`;
-  options.innerHTML = ["A","B","C","D"].map(k=>`
-    <div class="option" onclick="pick('${k}',this)">
-      ${k}. ${q[k]}
+    if(timeLeft<=0){
+      clearInterval(timerHandle);
+      submit(true);
+    }
+  },1000);
+}
+
+/* ===== RENDER QUESTION ===== */
+function render(){
+  const q = questions[index];
+  selected=null;
+
+  questionText.innerText = `Q${index+1}. ${q.q}`;
+  options.innerHTML = ["A","B","C","D"].map(o=>`
+    <div class="option" onclick="pick('${o}',this)">
+      ${o}. ${q[o]}
     </div>
   `).join("");
 
-  nextBtn.innerText = idx===questions.length-1 ? "Submit" : "Next";
+  nextBtn.innerText = (index===questions.length-1) ? "Submit" : "Next";
 }
 
-/* PICK OPTION */
+/* ===== PICK OPTION ===== */
 function pick(v,el){
   document.querySelectorAll(".option").forEach(o=>o.classList.remove("selected"));
   el.classList.add("selected");
   selected = v;
 }
 
-/* NEXT / SUBMIT */
+/* ===== NEXT / SUBMIT ===== */
 function next(){
-  if(!selected){ alert("Select an option"); return; }
+  if(!selected){
+    alert("Select an option");
+    return;
+  }
 
-  answers[questions[idx].id] = selected;
+  answers[questions[index].id] = selected;
 
-  if(idx===questions.length-1){
+  if(index === questions.length-1){
     submit(false);
   }else{
-    idx++;
-    show();
+    index++;
+    render();
   }
 }
 
-/* TIMER */
-function startTimer(){
-  timerId = setInterval(()=>{
-    timeLeft--;
-    timer.innerText =
-      `${String(Math.floor(timeLeft/60)).padStart(2,"0")}:${String(timeLeft%60).padStart(2,"0")}`;
-    if(timeLeft<=0) submit(true);
-  },1000);
-}
-
-/* SUBMIT */
+/* ===== SUBMIT ===== */
 function submit(auto){
-  if(submitted) return;
-  submitted = true;
-  clearInterval(timerId);
+  clearInterval(timerHandle);
 
   fetch(BACKEND,{
     method:"POST",
@@ -173,7 +184,7 @@ function submit(auto){
       action:"submitTest",
       token,
       testId,
-      auto: auto?"1":"0",
+      auto: auto ? "1":"0",
       answers: JSON.stringify(answers)
     })
   }).finally(()=>{
@@ -182,7 +193,10 @@ function submit(auto){
   });
 }
 
-/* TAB CLOSE / REFRESH */
+/* ===== AUTO SUBMIT RULES ===== */
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden) submit(true);
+});
 window.addEventListener("beforeunload",()=>submit(true));
 </script>
 
