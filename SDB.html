@@ -19,21 +19,13 @@ body{
   background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
   display:flex;
   justify-content:center;
-  padding:26px 12px 90px;
+  padding:20px 10px 80px;
 }
-  .page{
-  width:100%;
-  max-width:520px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-}
+.page{width:100%;max-width:520px}
 .card{
   background:#fff;
-  width:100%;
-  max-width:520px;
   border-radius:20px;
-  padding:26px;
+  padding:22px;
   box-shadow:0 20px 50px rgba(0,0,0,.28);
 }
 .header{text-align:center}
@@ -44,177 +36,53 @@ body{
   background:#f5f7fa;
   padding:14px;
   border-radius:14px;
-  margin-top:16px;
+  margin-top:14px;
   text-align:center;
   font-weight:600;
 }
 
-.attendanceValue{
-  font-size:26px;
-  font-weight:800;
-  margin-top:8px;
-}
-
-.attendance-good{ color:#1b5e20; }
-.attendance-bad{ color:#b71c1c; }
+.attendanceValue{font-size:26px;font-weight:800;margin-top:8px}
+.attendance-good{color:#1b5e20}
+.attendance-bad{color:#b71c1c}
 
 button{
   width:100%;
   padding:13px;
-  margin-top:14px;
+  margin-top:12px;
   border:none;
   border-radius:30px;
   font-size:15px;
-  font-weight:600;
+  font-weight:700;
   cursor:pointer;
 }
 
-.btn-attendance{
-  background:linear-gradient(135deg,#2e7d32,#1b5e20);
-  color:#fff;
-}
+/* BUTTON COLORS */
+.btn-tests{background:#6a1b9a;color:#fff}
+.btn-results{background:#00897b;color:#fff}
+.btn-attendance{background:#1565c0;color:#fff}
+.btn-logout{background:#c62828;color:#fff}
 
-.btn-logout{
-  background:linear-gradient(135deg,#e74c3c,#c0392b);
-  color:#fff;
+.dropdown{margin-top:10px;display:none}
+.loading{color:#1565c0;font-weight:700;text-align:center;margin-top:10px}
+
+.box{
+  padding:12px;
+  border-radius:12px;
+  margin-top:10px;
+  font-weight:600;
 }
+.present{background:#e8f5e9;color:#1b5e20}
+.absent{background:#fdecea;color:#b71c1c}
 
 footer{
   position:fixed;
-  left:0;
-  right:0;
-  bottom:0;
-  width:100%;
+  bottom:0;left:0;right:0;
   background:#0f2027;
   color:#cfd8dc;
   text-align:center;
-  padding:10px 12px;
+  padding:10px;
   font-size:13px;
   font-weight:600;
-  z-index:1000;
-}
-  @keyframes spin{
-  0%{transform:rotate(0deg);}
-  100%{transform:rotate(360deg);}
-}
-  .welcomeText{
-  font-weight:800;
-  font-size:18px;
-}
-
-.welcomeHighlight{
-  color:#1b5e20;   /* green */
-  font-weight:800;
-}
-  #logoutOverlay{
-  display:none;
-  position:fixed;
-  top:0;
-  left:0;
-  width:100vw;
-  height:100vh;
-  background:rgba(0,0,0,0.35);
-  z-index:9999;
-}
-.attendanceBox{
-  padding:14px;
-  border-radius:14px;
-  font-weight:600;
-}
-
-.presentBox{
-  background:#e8f5e9;
-  border:1px solid #c8e6c9;
-  color:#1b5e20;
-}
-
-.absentBox{
-  background:#fdecea;
-  border:1px solid #f5c6cb;
-  color:#b71c1c;
-}
-
-.dateChip{
-  display:inline-block;
-  padding:6px 10px;
-  margin:6px 6px 0 0;
-  border-radius:8px;
-  font-size:13px;
-  font-weight:600;
-}
-
-.dateGreen{
-  background:#c8e6c9;
-  color:#1b5e20;
-}
-#loadingBox{
-  color:#1565c0;      /* blue */
-  font-weight:700;
-}
-.dateRed{
-  background:#ffcdd2;
-  color:#b71c1c;
-}
-.logoutBox{
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%, -50%);
-  background:#ffffff;
-  padding:24px 30px;
-  border-radius:16px;
-  text-align:center;
-  font-weight:700;
-  color:#555;
-  box-shadow:0 12px 30px rgba(0,0,0,0.25);
-}
-
-.logoutSpinner{
-  width:36px;
-  height:36px;
-  margin:0 auto 12px;
-  border:4px solid #eee;
-  border-top:4px solid #c0392b;
-  border-radius:50%;
-  animation:spin 1s linear infinite;
-}
-  @media (max-width: 600px){
-
-  body{
-    padding:16px 10px 20px;
-    padding-bottom:70px;
-  }
-
-  .card{
-    padding:20px 18px;
-    border-radius:16px;
-  }
-
-  .header h1{
-    font-size:19px;
-  }
-
-  .header h2{
-    font-size:13px;
-  }
-
-  .welcomeText{
-    font-size:16px;
-  }
-
-  .attendanceValue{
-    font-size:22px;
-  }
-
-  button{
-    padding:12px;
-    font-size:14px;
-  }
-
-    .logoutBox{
-    width:85%;
-    padding:20px;
-  }
 }
 </style>
 </head>
@@ -223,269 +91,131 @@ footer{
 <div class="page">
 <div class="card">
 
-  <!-- HEADER -->
-  <div class="header">
-    <h1>Energy Storage Technology</h1>
-    <h2>ME4261</h2>
-  </div>
-<div class="infoBox" id="loadingBox">
-  Fetching your details… Please wait
-</div>
- <div id="welcomeBox" style="display:none; margin-top:16px; text-align:center;">
-  <div id="welcomeText" class="welcomeText"></div>
+<div class="header">
+  <h1>Energy Storage Technology</h1>
+  <h2>ME4261</h2>
 </div>
 
-  <!-- ATTENDANCE -->
-  <div id="contentArea" style="display:none">
-  <div class="infoBox">
-    Current Attendance Percentage
-    <div id="attendanceValue" class="attendanceValue">—</div>
-  </div>
+<div class="infoBox" id="loadingBox">Fetching your details… Please wait</div>
 
-  <!-- BUTTONS -->
-  <button class="btn-attendance" onclick="viewAttendance()">
-    View Attendance Details
-  </button>
-  <div id="attendanceLoading"
-     style="display:none;
-            margin-top:12px;
-            color:#c62828;
-            font-weight:700;
-            text-align:center;">
-  Loading… Please wait
+<div id="welcomeBox" style="display:none;margin-top:12px;text-align:center">
+  <b id="welcomeText"></b>
 </div>
-<button class="btn-attendance" onclick="openClassTests()">
-  Class Tests
-</button>
 
-<button class="btn-attendance" onclick="openResults()">
-  Check Results
-</button>
-<div id="attendancePanel" style="display:none; margin-top:16px;">
+<div id="contentArea" style="display:none">
 
-  <div class="attendanceBox presentBox">
+<div class="infoBox">
+  Current Attendance Percentage
+  <div id="attendanceValue" class="attendanceValue">—</div>
+</div>
+
+<!-- CLASS TESTS -->
+<button class="btn-tests" onclick="toggleClassTests()">Class Tests</button>
+<div id="testsLoading" class="loading" style="display:none">Loading… Please wait</div>
+<div id="testsBox" class="dropdown"></div>
+
+<!-- RESULTS -->
+<button class="btn-results" onclick="toggleResults()">Check Results</button>
+<div id="resultsLoading" class="loading" style="display:none">Loading… Please wait</div>
+<div id="resultsBox" class="dropdown"></div>
+
+<!-- ATTENDANCE -->
+<button class="btn-attendance" onclick="toggleAttendance()">View Attendance Details</button>
+<div id="attendanceBox" class="dropdown">
+  <div class="box present">
     <b>Present</b>
     <div id="presentDates"></div>
   </div>
-
-  <div class="attendanceBox absentBox" style="margin-top:12px">
+  <div class="box absent">
     <b>Absent</b>
     <div id="absentDates"></div>
   </div>
+</div>
+
+<button class="btn-logout" onclick="logout()">Logout</button>
 
 </div>
-  <button class="btn-logout" onclick="logout()">
-    Logout
-  </button>
 </div>
 </div>
-  <footer>
-  Developed by Dr. Rajesh Akula
-  <div>© 2026 · IIEST Shibpur</div>
+
+<footer>
+Developed by Dr. Rajesh Akula  
+<div>© 2026 · IIEST Shibpur</div>
 </footer>
 
-<div id="logoutOverlay">
-  <div class="logoutBox">
-    <div class="logoutSpinner"></div>
-    Logging out… Please wait
-  </div>
-</div>
- 
-
 <script>
-const BACKEND =
-"https://script.google.com/macros/s/AKfycbzVJ2lMkwvArC8f8cTgKVsNuWXOxVAQnkmNWZH7NzdOGQvgIyDjKU9NVRXhSdmiDes5/exec";
-const token = sessionStorage.getItem("token");
-if(!token){
-  alert("Session expired");
-  location.replace("index.html");
+const BACKEND="https://script.google.com/macros/s/AKfycbzVJ2lMkwvArC8f8cTgKVsNuWXOxVAQnkmNWZH7NzdOGQvgIyDjKU9NVRXhSdmiDes5/exec";
+const token=sessionStorage.getItem("token");
+
+function closeAll(){
+  ["testsBox","resultsBox","attendanceBox"].forEach(id=>{
+    document.getElementById(id).style.display="none";
+  });
 }
-document.getElementById("loadingBox").style.display = "block";
-/* ===== LOAD BASIC DATA ===== */
+
 Promise.all([
-  fetch(BACKEND,{
-    method:"POST",
-    body:new URLSearchParams({action:"dashboard",token})
-  }).then(r=>r.json()),
-
-  fetch(BACKEND,{
-    method:"POST",
-    body:new URLSearchParams({action:"getMyAttendance",token})
-  }).then(r=>r.json())
-])
-.then(([dash,att])=>{
-  document.getElementById("contentArea").style.display = "block";
-document.getElementById("loadingBox").style.display = "none";
- document.getElementById("welcomeText").innerHTML =
-  `Welcome <span class="welcomeHighlight">${dash.name} (${dash.roll})</span>`;
-document.getElementById("welcomeBox").style.display = "block";
-  if(att.status==="OK"){
-    const pct = Number(att.percent);
-    const el  = document.getElementById("attendanceValue");
-
-    el.innerText = `${pct}%`;
-    el.classList.add(pct >= 75 ? "attendance-good" : "attendance-bad");
-  }else{
-    document.getElementById("attendanceValue").innerText = "—";
-  }
+  fetch(BACKEND,{method:"POST",body:new URLSearchParams({action:"dashboard",token})}).then(r=>r.json()),
+  fetch(BACKEND,{method:"POST",body:new URLSearchParams({action:"getMyAttendance",token})}).then(r=>r.json())
+]).then(([d,a])=>{
+  loadingBox.style.display="none";
+  contentArea.style.display="block";
+  welcomeBox.style.display="block";
+  welcomeText.innerHTML=`Welcome <span style="color:#1b5e20">${d.name} (${d.roll})</span>`;
+  attendanceValue.innerText=a.percent+"%";
+  attendanceValue.className="attendanceValue "+(a.percent>=75?"attendance-good":"attendance-bad");
 });
 
-/* ===== ACTIONS ===== */
-  function prettyDate(d){
-  const dt = new Date(d);
-  const day = dt.getDate();
-  const suf =
-    day % 10 === 1 && day !== 11 ? "st" :
-    day % 10 === 2 && day !== 12 ? "nd" :
-    day % 10 === 3 && day !== 13 ? "rd" : "th";
+function toggleAttendance(){
+  const box=attendanceBox;
+  if(box.style.display==="block"){ box.style.display="none"; return; }
+  closeAll();
+  box.style.display="block";
 
-  return `${day}${suf} ${dt.toLocaleString("en",{month:"short"})} ${dt.getFullYear()}`;
-}
- function openClassTests(){
-  fetch(BACKEND,{
-    method:"POST",
-    body:new URLSearchParams({
-      action:"getStudentTestStatus",
-      token
-    })
-  })
+  fetch(BACKEND,{method:"POST",body:new URLSearchParams({action:"getMyAttendanceDetails",token})})
   .then(r=>r.json())
   .then(res=>{
-    const area = document.getElementById("contentArea");
-
-    area.innerHTML = `
-      <h3 style="text-align:center;margin-top:10px">Class Tests</h3>
-      ${res.tests.map(t=>{
-        if(t.attempted)
-          return `<div>${t.name} (Completed)</div>`;
-        if(t.enabled)
-          return `<button class="btn-attendance"
-                    onclick="startTest('${t.id}')">
-                    ${t.name} – START
-                  </button>`;
-        return `<div>${t.name} (Upcoming)</div>`;
-      }).join("<br>")}
-      <button class="btn-attendance" onclick="location.reload()">
-        Back
-      </button>
-    `;
+    presentDates.innerHTML=res.attended.join("<br>")||"—";
+    absentDates.innerHTML=res.absent.join("<br>")||"—";
   });
 }
 
-function startTest(id){
-  if(!confirm("Are you ready to take the test?\nDuration: 5 minutes")) return;
-  location.href = `test.html?test=${id}`;
-}
-
-function openResults(){
-  fetch(BACKEND,{
-    method:"POST",
-    body:new URLSearchParams({
-      action:"getStudentTestStatus",
-      token
-    })
-  })
+function toggleClassTests(){
+  if(testsBox.style.display==="block"){ testsBox.style.display="none"; return; }
+  closeAll();
+  testsLoading.style.display="block";
+  fetch(BACKEND,{method:"POST",body:new URLSearchParams({action:"getStudentTestStatus",token})})
   .then(r=>r.json())
   .then(res=>{
-    const evaluated = res.tests.filter(t => t.evaluated);
-    if(!evaluated.length){
-      alert("Results not published yet");
-      return;
-    }
-
-    const area = document.getElementById("contentArea");
-    area.innerHTML = `
-      <h3 style="text-align:center">Published Results</h3>
-      ${evaluated.map(t=>`
-        <button class="btn-attendance"
-                onclick="location.href='results.html?test=${t.id}'">
-          ${t.name}
-        </button>
-      `).join("")}
-      <button class="btn-attendance" onclick="location.reload()">Back</button>
-    `;
-  });
-}
-function viewAttendance(){
-
-  const loading = document.getElementById("attendanceLoading");
-  const panel   = document.getElementById("attendancePanel");
-  const present = document.getElementById("presentDates");
-  const absent  = document.getElementById("absentDates");
-
-  loading.style.display = "block";
-  panel.style.display   = "none";
-  present.innerHTML = "";
-  absent.innerHTML  = "";
-
-  fetch(BACKEND,{
-    method:"POST",
-    body:new URLSearchParams({
-      action:"getMyAttendanceDetails",
-      token
-    })
-  })
-  .then(r=>r.json())
-  .then(res=>{
-    loading.style.display = "none";
-    panel.style.display   = "block";
-
-    if(res.status !== "OK"){
-      present.innerHTML = "<i>No data</i>";
-      absent.innerHTML  = "<i>No data</i>";
-      return;
-    }
-
-    renderDates(present, res.attended, "dateGreen");
-    renderDates(absent,  res.absent,   "dateRed");
-  })
-  .catch(()=>{
-    loading.style.display = "none";
-    panel.style.display   = "block";
-    present.innerHTML = "Failed to load";
-    absent.innerHTML  = "Failed to load";
+    testsLoading.style.display="none";
+    testsBox.style.display="block";
+    testsBox.innerHTML=res.tests.map(t=>{
+      if(t.attempted) return `${t.name} (Completed)`;
+      if(t.enabled) return `<button class="btn-tests" onclick="location.href='test.html?test=${t.id}'">${t.name} – START</button>`;
+      return `${t.name} (Upcoming)`;
+    }).join("<br>");
   });
 }
 
-function renderDates(container, list, cls){
-
-  if(!list || !list.length){
-    container.innerHTML = "<i>No records</i>";
-    return;
-  }
-
-  container.innerHTML = list
-    .map(d => `<span class="dateChip ${cls}">${prettyDate(d)}</span>`)
-    .join("");
+function toggleResults(){
+  if(resultsBox.style.display==="block"){ resultsBox.style.display="none"; return; }
+  closeAll();
+  resultsLoading.style.display="block";
+  fetch(BACKEND,{method:"POST",body:new URLSearchParams({action:"getStudentTestStatus",token})})
+  .then(r=>r.json())
+  .then(res=>{
+    resultsLoading.style.display="none";
+    resultsBox.style.display="block";
+    const e=res.tests.filter(t=>t.evaluated);
+    resultsBox.innerHTML=e.length
+      ? e.map(t=>`<button class="btn-results" onclick="location.href='results.html?test=${t.id}'">${t.name}</button>`).join("")
+      : "Results not published yet";
+  });
 }
 
 function logout(){
-
-  if(!confirm("Are you sure you want to logout?")) return;
-
-  // Disable buttons
-  document.querySelectorAll("button").forEach(b=>{
-    b.disabled = true;
-    b.style.opacity = "0.6";
-    b.style.cursor = "not-allowed";
-  });
-
-  // Show loader
-  document.getElementById("logoutOverlay").style.display = "block";
-
-  fetch(BACKEND,{
-    method:"POST",
-    body:new URLSearchParams({
-      action:"logout",
-      token
-    })
-  })
-  .finally(()=>{
-    sessionStorage.clear();
-    location.replace("index.html");
-  });
+  sessionStorage.clear();
+  location.replace("index.html");
 }
 </script>
-
- </body>
+</body>
 </html>
