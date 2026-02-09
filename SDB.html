@@ -294,7 +294,7 @@ footer{
 
 <script>
 const BACKEND =
-"https://script.google.com/macros/s/AKfycbysZcr0U5HNQYiA_RACAY5L-s4ui6RWXVV6RO_94TpBnpqiAIosW5vxMRa9C_U6x_ZS/exec";
+"https://script.google.com/macros/s/AKfycbzVJ2lMkwvArC8f8cTgKVsNuWXOxVAQnkmNWZH7NzdOGQvgIyDjKU9NVRXhSdmiDes5/exec";
 const token = sessionStorage.getItem("token");
 if(!token){
   alert("Session expired");
@@ -341,7 +341,7 @@ document.getElementById("welcomeBox").style.display = "block";
 
   return `${day}${suf} ${dt.toLocaleString("en",{month:"short"})} ${dt.getFullYear()}`;
 }
-  function openClassTests(){
+ function openClassTests(){
   fetch(BACKEND,{
     method:"POST",
     body:new URLSearchParams({
@@ -351,16 +351,24 @@ document.getElementById("welcomeBox").style.display = "block";
   })
   .then(r=>r.json())
   .then(res=>{
-    let msg = res.tests.map(t=>{
-      if(t.attempted)
-        return `${t.name} (Completed)`;
-      if(t.enabled)
-        return `<button onclick="startTest('${t.id}')">${t.name} – START</button>`;
-      return `${t.name} (Upcoming)`;
-    }).join("<br><br>");
+    const area = document.getElementById("contentArea");
 
-    document.body.innerHTML =
-      `<div style="padding:20px">${msg}</div>`;
+    area.innerHTML = `
+      <h3 style="text-align:center;margin-top:10px">Class Tests</h3>
+      ${res.tests.map(t=>{
+        if(t.attempted)
+          return `<div>${t.name} (Completed)</div>`;
+        if(t.enabled)
+          return `<button class="btn-attendance"
+                    onclick="startTest('${t.id}')">
+                    ${t.name} – START
+                  </button>`;
+        return `<div>${t.name} (Upcoming)</div>`;
+      }).join("<br>")}
+      <button class="btn-attendance" onclick="location.reload()">
+        Back
+      </button>
+    `;
   });
 }
 
@@ -385,9 +393,17 @@ function openResults(){
       return;
     }
 
-    // For now: allow viewing one test at a time
-    const t = evaluated[0];
-    location.href = `results.html?test=${t.id}`;
+    const area = document.getElementById("contentArea");
+    area.innerHTML = `
+      <h3 style="text-align:center">Published Results</h3>
+      ${evaluated.map(t=>`
+        <button class="btn-attendance"
+                onclick="location.href='results.html?test=${t.id}'">
+          ${t.name}
+        </button>
+      `).join("")}
+      <button class="btn-attendance" onclick="location.reload()">Back</button>
+    `;
   });
 }
 function viewAttendance(){
