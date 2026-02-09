@@ -373,19 +373,21 @@ function openResults(){
   fetch(BACKEND,{
     method:"POST",
     body:new URLSearchParams({
-      action:"getResults",
+      action:"getStudentTestStatus",
       token
     })
   })
   .then(r=>r.json())
   .then(res=>{
-    if(!res.results.length){
+    const evaluated = res.tests.filter(t => t.evaluated);
+    if(!evaluated.length){
       alert("Results not published yet");
       return;
     }
-    alert(
-      res.results.map(r=>`${r[1]} → ${r[2]} marks`).join("\n")
-    );
+
+    // For now: allow viewing one test at a time
+    const t = evaluated[0];
+    location.href = `results.html?test=${t.id}`;
   });
 }
 function viewAttendance(){
