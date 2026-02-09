@@ -328,7 +328,10 @@ function toggleClassTests(){
     testsBox.style.display="block";
     testsBox.innerHTML=res.tests.map(t=>{
       if(t.attempted) return `${t.name} (Completed)`;
-      if(t.enabled) return `<button class="btn-tests" onclick="location.href='test.html?test=${t.id}'">${t.name} – START</button>`;
+      if(t.enabled)
+  return `<button class="btn-tests" onclick="confirmStartTest('${t.id}')">
+            ${t.name} – START
+          </button>`;
       return `${t.name} (Upcoming)`;
     }).join("<br>");
   });
@@ -358,7 +361,19 @@ function toggleResults(){
       : "Results not published yet";
   });
 }
+function confirmStartTest(testId){
+  const ok = confirm(
+    "Are you sure you want to start the test?\n\n" +
+    "• Test duration is fixed\n" +
+    "• Leaving the page will auto-submit\n" +
+    "• Re-attempt is NOT allowed\n\n" +
+    "Click OK to start the test."
+  );
 
+  if(!ok) return;
+
+  location.href = `test.html?test=${testId}`;
+}
 function logout(){
 
   if(!confirm("Are you sure you want to logout?")) return;
