@@ -118,33 +118,47 @@ fetch(BACKEND,{
 
 /* LOAD QUESTIONS */
 function loadQuestions(){
-  fetch(`${BACKEND}?action=getQuestions&testId=${testId}`)
-    .then(r=>r.json())
-    .then(res=>{
+  fetch(BACKEND,{
+    method:"POST",
+    body:new URLSearchParams({
+      action:"getQuestions",
+      token,
+      testId
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
 
-      if(res.status !== "OK"){
-        alert("Questions not available for this test");
-        location.replace("SDB.html");
-        return;
-      }
+    console.log("Question API response:", res); // DEBUG (keep for now)
 
-      if(!res.questions || !res.questions.length){
-        alert("No questions found");
-        location.replace("SDB.html");
-        return;
-      }
+    if(!res || res.status !== "OK"){
+      alert("Questions not available for this test");
+      location.replace("SDB.html");
+      return;
+    }
 
-      questions = res.questions;
+    if(!res.questions || res.questions.length === 0){
+      alert("No questions found");
+      location.replace("SDB.html");
+      return;
+    }
 
-      // Hide loading
-      document.getElementById("loadingMsg").style.display = "none";
+    questions = res.questions;
 
-      // Show test UI
-      document.getElementById("testUI").style.display = "block";
+    // Hide loading
+    document.getElementById("loadingMsg").style.display = "none";
 
-      index = 0;
-      render();   // SAFE NOW
-    });
+    // Show test UI
+    document.getElementById("testUI").style.display = "block";
+
+    index = 0;
+    render();
+  })
+  .catch(err=>{
+    console.error(err);
+    alert("Failed to load questions");
+    location.replace("SDB.html");
+  });
 }
 /* TIMER */
 function startTimer(){
@@ -165,6 +179,8 @@ function startTimer(){
 /* RENDER QUESTION */
 function render(){
   const q = questions[index];
+
+  selected = null; // 🔴 IMPORTANT FIX
 
   questionText.innerText = `Q${index+1}. ${q.q}`;
 
