@@ -121,15 +121,31 @@ function loadQuestions(){
   fetch(`${BACKEND}?action=getQuestions&testId=${testId}`)
     .then(r=>r.json())
     .then(res=>{
+
+      if(res.status !== "OK"){
+        alert("Questions not available for this test");
+        location.replace("student_dashboard.html");
+        return;
+      }
+
+      if(!res.questions || !res.questions.length){
+        alert("No questions found");
+        location.replace("student_dashboard.html");
+        return;
+      }
+
       questions = res.questions;
 
+      // Hide loading
       document.getElementById("loadingMsg").style.display = "none";
+
+      // Show test UI
       document.getElementById("testUI").style.display = "block";
 
-      render();
+      index = 0;
+      render();   // SAFE NOW
     });
 }
-
 /* TIMER */
 function startTimer(){
   timerHandle = setInterval(()=>{
@@ -149,9 +165,9 @@ function startTimer(){
 /* RENDER QUESTION */
 function render(){
   const q = questions[index];
-  selected = null;
 
   questionText.innerText = `Q${index+1}. ${q.q}`;
+
   options.innerHTML = ["A","B","C","D"].map(o=>`
     <div class="option" onclick="pick('${o}',this)">
       ${o}. ${q[o]}
@@ -159,7 +175,7 @@ function render(){
   `).join("");
 
   nextBtn.innerText =
-    index === questions.length-1 ? "Submit" : "Next";
+    index === questions.length - 1 ? "Submit" : "Next";
 }
 
 /* PICK OPTION */
