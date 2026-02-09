@@ -89,7 +89,7 @@ if(!token || !testId){
 
 /* CONFIRM START */
 if(!confirm("Are you sure you want to start the test?\n\nOnce started, you cannot reattempt.")){
-  location.replace("student_dashboard.html");
+  location.replace("SDB.html");
 }
 
 let questions = [];
@@ -109,7 +109,7 @@ fetch(BACKEND,{
 .then(res=>{
   if(res.status !== "STARTED"){
     alert("You cannot attempt this test");
-    location.replace("student_dashboard.html");
+    location.replace("SDB.html");
     return;
   }
   loadQuestions();
@@ -124,13 +124,13 @@ function loadQuestions(){
 
       if(res.status !== "OK"){
         alert("Questions not available for this test");
-        location.replace("student_dashboard.html");
+        location.replace("SDB.html");
         return;
       }
 
       if(!res.questions || !res.questions.length){
         alert("No questions found");
-        location.replace("student_dashboard.html");
+        location.replace("SDB.html");
         return;
       }
 
@@ -221,7 +221,7 @@ function submit(auto){
     })
   }).finally(()=>{
     alert("Test submitted successfully");
-    location.replace("student_dashboard.html");
+    location.replace("SDB.html");
   });
 }
 
