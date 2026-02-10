@@ -47,9 +47,9 @@ body{
 <div class="header">Class Test Result</div>
 <div class="score" id="score"></div>
 <div id="content"></div>
-
+<script src="config.js"></script>
 <script>
-const BACKEND = "https://script.google.com/macros/s/AKfycbwzk7hQYHAQLjLvJwMHxzqVn1Q5Jx-l_wbxhA5iDLmSGTf12GgJft4Pq9DR3NKSl7vv/exec";
+const BACKEND = BACKEND_URL;
 const token = sessionStorage.getItem("token");
 if(!token) location.replace("index.html");
 
