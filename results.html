@@ -31,13 +31,50 @@ body{
   border-radius:14px;
   box-shadow:0 8px 18px rgba(0,0,0,.15);
 }
+  .option.correct{
+  background:#e8f5e9;
+  color:#1b5e20;
+  font-weight:800;
+  border:2px solid #2e7d32;
+}
+
+.option.wrong{
+  background:#fdecea;
+  color:#b71c1c;
+  border:2px solid #c62828;
+}.option::before{
+  content:"○";
+  font-weight:800;
+  margin-right:8px;
+}
+.option.correct::before,
+.option.wrong::before{
+  content:"●";
+}
 .option{
   padding:8px;
   margin-top:6px;
   border-radius:8px;
 }
-.correct{background:#e8f5e9;color:#1b5e20;}
-.wrong{background:#fdecea;color:#b71c1c;}
+  .closeBtn{
+  position:fixed;
+  bottom:14px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#203a43;
+  color:#fff;
+  border:none;
+  padding:14px 28px;
+  border-radius:30px;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:0 8px 18px rgba(0,0,0,.25);
+}
+
+.closeBtn:hover{
+  background:#162a32;
+}
 .neutral{background:#f5f7fa;}
 </style>
 </head>
@@ -88,7 +125,14 @@ fetch(BACKEND,{
       </div>
     `).join("");
 });
+    function goBack(){
+  if(confirm("Go back to dashboard?")){
+    location.href = "SDB.html";
+  }
+}
 </script>
-
+<button class="closeBtn" onclick="goBack()">
+  Close & Go to Dashboard
+</button>
 </body>
 </html>
