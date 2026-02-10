@@ -125,7 +125,7 @@ button:disabled{background:#999;cursor:not-allowed;}
   if(sessionStorage.getItem("token")){
   window.location.href = "SDB.html"; // or dashboard.html
 }
-const BACKEND_URL = BACKEND_URL;  
+const BACKEND = BACKEND_URL;  
 function login(){
   const roll=document.getElementById("roll").value.trim().toUpperCase();
   const dob=document.getElementById("dob").value;
@@ -141,14 +141,14 @@ function login(){
   btn.disabled=true;
   msg.innerHTML='<div class="loader"></div>Authenticating…';
 
-  fetch(BACKEND_URL,{
-    method:"POST",
-    body:new URLSearchParams({
-      action:"login",
-      roll:roll,
-      dob:dob
-    })
+  fetch(BACKEND,{
+  method:"POST",
+  body:new URLSearchParams({
+    action:"login",
+    roll: roll,
+    dob: dob
   })
+})
   .then(r=>r.json())
   .then(res=>{
   if(res.status === "OK" && res.token){
