@@ -62,7 +62,13 @@ button{
 }
 
 /* BUTTON COLORS */
-.btn-tests{background:#6a1b9a;color:#fff}
+.btn-tests{
+  background:#2e7d32;        /* deep green */
+  color:#fff;
+}
+.btn-tests:hover{
+  background:#1b5e20;
+}
 .btn-results{background:#00897b;color:#fff}
 .btn-attendance{background:#1565c0;color:#fff}
 .btn-logout{background:#c62828;color:#fff}
@@ -114,7 +120,53 @@ button{
   background:#c8e6c9;
   color:#1b5e20;
 }
+.testsContainer{
+  background:#e8f5e9;          /* light green */
+  border-radius:20px;
+  padding:20px;
+  margin-top:14px;
+  box-shadow:0 12px 35px rgba(0,0,0,.25);
+}
 
+/* BASE TEST BUTTON */
+.testBtn{
+  width:100%;
+  padding:18px;
+  margin-bottom:14px;
+  border-radius:16px;
+  font-size:17px;
+  font-weight:800;
+  border:none;
+  text-align:center;
+  cursor:default;
+  box-shadow:0 8px 20px rgba(0,0,0,.18);
+}
+
+/* ACTIVE TEST */
+.test-active{
+  background:#c62828;          /* RED */
+  color:#fff;
+  cursor:pointer;
+  animation:blink 1.3s infinite;
+}
+
+/* COMPLETED TEST */
+.test-completed{
+  background:#2e7d32;          /* GREEN */
+  color:#fff;
+}
+
+/* UPCOMING TEST */
+.test-upcoming{
+  background:#fff9c4;          /* PALE YELLOW */
+  color:#555;
+}
+
+@keyframes blink{
+  0%{ box-shadow:0 0 0 rgba(198,40,40,.4); }
+  50%{ box-shadow:0 0 18px rgba(198,40,40,1); }
+  100%{ box-shadow:0 0 0 rgba(198,40,40,.4); }
+}
 .dateRed{
   background:#ffcdd2;
   color:#b71c1c;
@@ -193,7 +245,7 @@ footer{
 <!-- CLASS TESTS -->
 <button class="btn-tests" onclick="toggleClassTests()">Class Tests</button>
 <div id="testsLoading" class="loading" style="display:none">Loading… Please wait</div>
-<div id="testsBox" class="dropdown"></div>
+<div id="testsBox" class="testsContainer" style="display:none"></div>
 
 <!-- RESULTS -->
 <button class="btn-results" onclick="toggleResults()">Check Results</button>
@@ -340,30 +392,33 @@ function toggleClassTests(){
 
     testsBox.innerHTML = res.tests.map(t => {
 
-      // 1️⃣ Student already attempted
-      if(t.attempted){
-        return `${t.name} (Completed)`;
-      }
+  /* COMPLETED */
+  if(t.attempted){
+    return `
+      <div class="testBtn test-completed">
+        ${t.name} ✔ COMPLETED
+      </div>
+    `;
+  }
 
-      // 2️⃣ Enabled for this student
-      if(t.enabled){
-        return `
-          <button class="btn-tests"
-            onclick="startTestConfirm('${t.id}')">
-            ${t.name} – START
-          </button>
-        `;
-      }
+  /* ACTIVE */
+  if(t.enabled){
+    return `
+      <div class="testBtn test-active"
+           onclick="startTestConfirm('${t.id}')">
+        ${t.name} ▶ START TEST
+      </div>
+    `;
+  }
 
-      // 3️⃣ Someone else attempted
-      if(t.globallyAttempted){
-        return `${t.name} (Completed)`;
-      }
+  /* UPCOMING */
+  return `
+    <div class="testBtn test-upcoming">
+      ${t.name} ⏳ UPCOMING
+    </div>
+  `;
 
-      // 4️⃣ Nobody attempted yet
-      return `${t.name} (Upcoming)`;
-
-    }).join("<br>");
+}).join("");
   });
 }
   function startTestConfirm(testId){
