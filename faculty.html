@@ -122,8 +122,9 @@ button:disabled{opacity:.6;cursor:not-allowed;}
 
   <div class="testBlock">
     <button class="testBtn btn-blue" onclick="toggleTest('CT1')">
-      Class Test – I
-    </button>
+  Class Test – I
+  <span id="status_CT1" style="font-size:13px;margin-left:6px;"></span>
+</button>
 
     <div id="CT1" class="testPanel">
 
@@ -158,9 +159,11 @@ button:disabled{opacity:.6;cursor:not-allowed;}
       </div>
 
       <div id="eval_CT1" class="subCard" style="display:none;">
-        <button class="btn-main" onclick="evaluateTest('CT1')">
-          Evaluate & Publish Results
-        </button>
+       <button class="btn-main"
+        id="evalBtn_CT1"
+        onclick="evaluateTest('CT1')">
+  Evaluate & Publish Results
+</button>
       </div>
 
     </div>
@@ -186,6 +189,25 @@ if(!facultyToken){
   sessionStorage.clear();
   location.replace("faculty_login.html");
 }
+ 
+let testStatus = {};
+
+fetch(BACKEND,{
+  method:"POST",
+  body:new URLSearchParams({
+    action: "getAllTestsStatus",
+    token: facultyToken
+  })
+})
+.then(r=>r.json())
+.then(res=>{
+  if(res.status === "OK"){
+    res.tests.forEach(t=>{
+      testStatus[t.id] = t.evaluated;
+    });
+  }
+});
+
 
 /* ========= GLOBAL ========= */
 let allStudents = [];
@@ -215,9 +237,18 @@ function closeSection(){
 
 /* ========= ACCORDION ========= */
 function toggleTest(id){
+  updateTestStatus(id);
+
   document.querySelectorAll(".testPanel").forEach(p=>{
     if(p.id!==id) p.style.display="none";
   });
+const btn = document.getElementById("evalBtn_" + id);
+if(btn && testStatus[id]){
+  btn.disabled = true;
+  btn.innerText = "Results Published";
+  btn.style.opacity = "0.6";
+  btn.style.cursor = "not-allowed";
+}
   const p=document.getElementById(id);
   p.style.display=p.style.display==="block"?"none":"block";
 }
@@ -231,7 +262,16 @@ function showEvaluate(id){
   document.getElementById("eval_"+id).style.display="block";
   document.getElementById("enable_"+id).style.display="none";
 }
+function updateTestStatus(testId){
+  const s = document.getElementById("status_" + testId);
+  if(!s) return;
 
+  if(testStatus[testId]){
+    s.innerHTML = "🟢 Evaluated";
+  } else {
+    s.innerHTML = "🔴 Not Evaluated";
+  }
+}
 function showCustom(id){
   const box=document.getElementById("custom_"+id);
   box.style.display="block";
@@ -295,9 +335,26 @@ function evaluateTest(testId){
   })
   .then(r=>r.json())
   .then(res=>{
-    hideLoader();
-    alert(res.status==="EVALUATED"?"Results Published":"Evaluation Failed");
-  });
+  hideLoader();
+
+  if(res.status === "EVALUATED"){
+  alert("Results Published");
+
+  testStatus[testId] = true;
+  updateTestStatus(testId);
+
+  const btn = document.getElementById("evalBtn_" + testId);
+  if(btn){
+    btn.disabled = true;
+    btn.innerText = "Results Published";
+    btn.style.opacity = "0.6";
+    btn.style.cursor = "not-allowed";
+  }
+}
+  else {
+    alert("Evaluation Failed");
+  }
+});
 }
 
 /* ========= LOADER ========= */
