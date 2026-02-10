@@ -288,9 +288,10 @@ footer{
 Developed by Dr. Rajesh Akula  
 <div>© 2026 · IIEST Shibpur</div>
 </footer>
-
+<script src="config.js"></script>
 <script>
-const BACKEND="https://script.google.com/macros/s/AKfycbwzk7hQYHAQLjLvJwMHxzqVn1Q5Jx-l_wbxhA5iDLmSGTf12GgJft4Pq9DR3NKSl7vv/exec";
+  
+const BACKEND=BACKEND_URL;
 const token=sessionStorage.getItem("token");
 const testsBox = document.getElementById("testsBox");
 const resultsBox = document.getElementById("resultsBox");
