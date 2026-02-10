@@ -120,13 +120,12 @@ button:disabled{background:#999;cursor:not-allowed;}
     <div>© 2026 · IIEST Shibpur</div>
   </div>
 </div>
-
+<script src="config.js"></script>
 <script>
   if(sessionStorage.getItem("token")){
   window.location.href = "SDB.html"; // or dashboard.html
 }
-const BACKEND_URL =
-"https://script.google.com/macros/s/AKfycbwzk7hQYHAQLjLvJwMHxzqVn1Q5Jx-l_wbxhA5iDLmSGTf12GgJft4Pq9DR3NKSl7vv/exec";  
+const BACKEND_URL = BACKEND_URL;  
 function login(){
   const roll=document.getElementById("roll").value.trim().toUpperCase();
   const dob=document.getElementById("dob").value;
