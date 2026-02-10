@@ -471,9 +471,19 @@ function toggleResults(){
     resultsLoading.style.display="none";
     resultsBox.style.display="block";
     const e=res.tests.filter(t=>t.evaluated);
-    resultsBox.innerHTML=e.length
-      ? e.map(t=>`<button class="btn-results" onclick="location.href='results.html?test=${t.id}'">${t.name}</button>`).join("")
-      : "Results not published yet";
+    resultsBox.innerHTML = e.length
+  ? e.map(t => `
+      <div class="box" style="background:#f5f7fa">
+        <b>${t.name}</b><br>
+        Marks: ${t.score ?? "—"}<br><br>
+
+        <button class="btn-results"
+          onclick="location.href='results.html?test=${t.id}'">
+          View Answer Sheet
+        </button>
+      </div>
+    `).join("")
+  : "Results not published yet";
   });
 }
 function confirmStartTest(testId){
