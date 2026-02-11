@@ -556,7 +556,9 @@ ${t.evaluated ? `onclick="toggleResultPanel('${t.id}')"` : ""}>
              <div class="resultMarks">
   Marks: ${t.score} / ${t.total}
 </div>
-
+<div style="text-align:center;font-weight:700;color:#444;margin-bottom:8px">
+   Test conducted on: ${t.completionDate || "-"}
+ </div>
 <div style="text-align:center;font-weight:600;margin-bottom:6px">
   Maximum marks obtained: ${t.maxScore}
 </div>
