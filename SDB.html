@@ -211,7 +211,20 @@ button{
   border-radius:50%;
   animation:spin 1s linear infinite;
 }
+.btn-view{
+  background:#3949ab;      /* Indigo */
+  color:#fff;
+  padding:12px;
+  border:none;
+  border-radius:24px;
+  font-weight:700;
+  font-size:14px;
+  cursor:pointer;
+}
 
+.btn-view:hover{
+  background:#283593;
+}
 @keyframes spin{
   to{transform:rotate(360deg)}
 }
@@ -471,29 +484,68 @@ function prettyDate(d){
   return `${day}${suf} ${dt.toLocaleString("en",{month:"short"})} ${dt.getFullYear()}`;
 }
 function toggleResults(){
-  if(resultsBox.style.display==="block"){ resultsBox.style.display="none"; return; }
+  if(resultsBox.style.display==="block"){
+    resultsBox.style.display="none";
+    return;
+  }
+
   closeAll();
   resultsLoading.style.display="block";
-  fetch(BACKEND,{method:"POST",body:new URLSearchParams({action:"getStudentTestStatus",token})})
+
+  fetch(BACKEND,{
+    method:"POST",
+    body:new URLSearchParams({
+      action:"getStudentTestStatus",
+      token
+    })
+  })
   .then(r=>r.json())
   .then(res=>{
     resultsLoading.style.display="none";
     resultsBox.style.display="block";
-    const e=res.tests.filter(t=>t.evaluated);
-    resultsBox.innerHTML = e.length
-  ? e.map(t => `
-      <div class="box" style="background:#f5f7fa">
-        <b>${t.name}</b><br>
-        Marks: ${t.score ?? "—"}<br><br>
 
-        <button class="btn-results"
-          onclick="location.href='results.html?test=${t.id}'">
-          View Answer Sheet
-        </button>
-      </div>
-    `).join("")
-  : "Results not published yet";
+    resultsBox.innerHTML = res.tests.map(t => {
+
+      /* NOT EVALUATED → DISABLED */
+      if(!t.evaluated){
+        return `
+          <div class="testBtn test-upcoming">
+            ${t.name} (Results Not Published)
+          </div>
+        `;
+      }
+
+      /* EVALUATED → CLICKABLE */
+      return `
+        <div class="testBtn test-completed"
+             onclick="showResultDetails('${t.id}', ${t.score ?? 0})">
+          ${t.name} (View Results)
+        </div>
+      `;
+
+    }).join("");
   });
+}
+  function showResultDetails(testId, score){
+  resultsBox.innerHTML = `
+    <div class="box" style="background:#e8f5e9">
+      <b>Marks</b><br><br>
+      <div style="font-size:22px;font-weight:800;color:#1b5e20">
+        ${score}
+      </div><br>
+
+      <button class="btn-view"
+        onclick="location.href='results.html?test=${testId}'">
+        View Answer Sheet
+      </button>
+    </div>
+
+    <button class="btn-results"
+      style="margin-top:12px"
+      onclick="toggleResults()">
+      ← Back to Results
+    </button>
+  `;
 }
 function confirmStartTest(testId){
   const ok = confirm(
