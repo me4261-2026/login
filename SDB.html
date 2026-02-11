@@ -197,11 +197,11 @@ button{
   background:#ffcdd2;
   color:#b71c1c;
 }
-  #resultLoadingOverlay{
+ #resultLoadingOverlay{
   position:fixed;
   inset:0;
   background:rgba(0,0,0,0.35);
-  display:flex;
+  display:none;        /* default hidden */
   align-items:center;
   justify-content:center;
   z-index:9999;
@@ -699,7 +699,7 @@ function logout(){
     Logging out… Please wait
   </div>
 </div>
-  <div id="resultLoadingOverlay" style="display:none">
+  <div id="resultLoadingOverlay">
   <div class="logoutBox">
     <div class="logoutSpinner"></div>
     Loading Answer Sheet… Please wait
