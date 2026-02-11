@@ -404,8 +404,8 @@ function toggleClassTests(){
 
     testsBox.innerHTML = res.tests.map(t => {
 
-  /* COMPLETED */
-  if(t.attempted){
+  /* CASE 1: Student already attempted */
+  if (t.attempted) {
     return `
       <div class="testBtn test-completed">
         ${t.name} (COMPLETED)
@@ -413,8 +413,8 @@ function toggleClassTests(){
     `;
   }
 
-  /* ACTIVE */
-  if(t.enabled){
+  /* CASE 2: Student is enabled → allow start (MOST IMPORTANT) */
+  if (t.enabled) {
     return `
       <div class="testBtn test-active"
            onclick="startTestConfirm('${t.id}')">
@@ -423,7 +423,16 @@ function toggleClassTests(){
     `;
   }
 
-  /* UPCOMING */
+  /* CASE 3: Student not enabled, but test already occurred */
+  if (t.globallyAttempted) {
+    return `
+      <div class="testBtn test-completed">
+        ${t.name} (COMPLETED – Not Eligible)
+      </div>
+    `;
+  }
+
+  /* CASE 4: Test not started yet */
   return `
     <div class="testBtn test-upcoming">
       ${t.name} (UPCOMING)
