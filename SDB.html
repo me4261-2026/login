@@ -452,7 +452,7 @@ function toggleClassTests(){
     <div class="testBtn test-completed">
       ${t.name} (COMPLETED)
       <div style="font-size:12px;font-weight:600;margin-top:4px">
-        Completed on: ${t.completionDate}
+        Test conducted on: ${t.completionDate}
       </div>
     </div>
   `;
@@ -468,14 +468,17 @@ function toggleClassTests(){
     `;
   }
 
-  /* CASE 3: Student not enabled, but test already occurred */
-  if (t.globallyAttempted) {
-    return `
-      <div class="testBtn test-completed">
-        ${t.name} (COMPLETED)
+ /* CASE 3: Test conducted (anyone attempted) */
+if (t.globallyAttempted) {
+  return `
+    <div class="testBtn test-completed">
+      ${t.name} (COMPLETED)
+      <div style="font-size:12px;font-weight:600;margin-top:4px">
+        Test conducted on: ${t.completionDate || "-"}
       </div>
-    `;
-  }
+    </div>
+  `;
+}
 
   /* CASE 4: Test not started yet */
   return `
