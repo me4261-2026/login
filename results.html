@@ -43,7 +43,16 @@ body{
   font-weight:800;
   border:2px solid #2e7d32;
 }
-
+.scoreBox{
+  display:inline-block;
+  background:#e8f5e9;        /* light green background */
+  color:#1b5e20;             /* dark green text */
+  padding:10px 18px;
+  border-radius:12px;
+  font-weight:800;
+  font-size:18px;
+  box-shadow:0 4px 10px rgba(0,0,0,.08);
+}
 .option.wrong{
   background:#fdecea;
   color:#b71c1c;
@@ -116,8 +125,11 @@ fetch(BACKEND,{
     return;
   }
 
-  document.getElementById("score").innerText =
-    `Score: ${res.score} / ${res.questions.length}`;
+  document.getElementById("score").innerHTML =
+  `<div class="scoreBox">
+     Marks: ${res.score} / ${res.questions.length}
+   </div>`;
+
 
   document.getElementById("content").innerHTML =
     res.questions.map((q,i)=>`
