@@ -197,6 +197,15 @@ button{
   background:#ffcdd2;
   color:#b71c1c;
 }
+  #resultLoadingOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.35);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
   #logoutOverlay{
   position:fixed;
   inset:0;
@@ -642,9 +651,9 @@ function confirmStartTest(testId){
 
   location.href = `test.html?test=${testId}`;
 }
-  function openAnswerSheet(testId){
+ function openAnswerSheet(testId){
 
-  // Disable all buttons (optional but professional)
+  // Disable buttons
   document.querySelectorAll("button").forEach(btn=>{
     btn.disabled = true;
     btn.style.opacity = "0.6";
@@ -653,10 +662,8 @@ function confirmStartTest(testId){
   // Show overlay
   document.getElementById("resultLoadingOverlay").style.display = "flex";
 
-  // Small delay for smooth UX
-  setTimeout(()=>{
-    location.href = `results.html?test=${testId}`;
-  }, 300);
+  // Navigate immediately
+  location.href = `results.html?test=${testId}`;
 }
 function logout(){
 
