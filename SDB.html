@@ -240,6 +240,12 @@ button{
   border-radius:50%;
   animation:spin 1s linear infinite;
 }
+  .resultInfo{
+  text-align:left;
+  font-weight:600;
+  color:#1565c0;   /* Professional Blue */
+  margin-bottom:6px;
+}
 .btn-view{
   background:#3949ab;      /* Indigo */
   color:#fff;
@@ -553,25 +559,25 @@ ${t.evaluated ? `onclick="toggleResultPanel('${t.id}')"` : ""}>
           ${
             t.evaluated
             ? `
-             <div class="resultMarks">
-  Marks: ${t.score} / ${t.total}
-</div>
-<div style="text-align:center;font-weight:700;color:#444;margin-bottom:8px">
+  <div class="resultMarks">
+   Marks: ${t.score} / ${t.total}
+ </div>
+<div class="resultInfo">
    Test conducted on: ${t.completionDate || "-"}
  </div>
-<div style="text-align:center;font-weight:600;margin-bottom:6px">
-  Maximum marks obtained: ${t.maxScore}
-</div>
+ <div class="resultInfo">
+   Maximum marks obtained: ${t.maxScore}
+ </div>
 
-<div style="text-align:center;font-weight:600;color:#555">
-  Class average: ${t.avgScore}
-</div>
+ <div class="resultInfo">
+   Class average: ${t.avgScore}
+ </div>
 
-              <button class="btn-view"
-                onclick="openAnswerSheet('${t.id}')">
-                View Answer Sheet
-              </button>
-            `
+ <button class="btn-view"
+   onclick="openAnswerSheet('${t.id}')">
+   View Answer Sheet
+ </button>
+`
             : `
               <div style="text-align:center;font-weight:600;color:#777">
                 Results not published yet
