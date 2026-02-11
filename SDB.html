@@ -448,12 +448,15 @@ function toggleClassTests(){
 
   /* CASE 1: Student already attempted */
   if (t.attempted) {
-    return `
-      <div class="testBtn test-completed">
-        ${t.name} (COMPLETED)
+  return `
+    <div class="testBtn test-completed">
+      ${t.name} (COMPLETED)
+      <div style="font-size:12px;font-weight:600;margin-top:4px">
+        Completed on: ${t.completionDate}
       </div>
-    `;
-  }
+    </div>
+  `;
+}
 
   /* CASE 2: Student is enabled → allow start (MOST IMPORTANT) */
   if (t.enabled) {
@@ -560,7 +563,7 @@ ${t.evaluated ? `onclick="toggleResultPanel('${t.id}')"` : ""}>
 </div>
 
               <button class="btn-view"
-                onclick="location.href='results.html?test=${t.id}'">
+                onclick="openAnswerSheet('${t.id}')">
                 View Answer Sheet
               </button>
             `
@@ -622,6 +625,22 @@ function confirmStartTest(testId){
 
   location.href = `test.html?test=${testId}`;
 }
+  function openAnswerSheet(testId){
+
+  // Disable all buttons (optional but professional)
+  document.querySelectorAll("button").forEach(btn=>{
+    btn.disabled = true;
+    btn.style.opacity = "0.6";
+  });
+
+  // Show overlay
+  document.getElementById("resultLoadingOverlay").style.display = "flex";
+
+  // Small delay for smooth UX
+  setTimeout(()=>{
+    location.href = `results.html?test=${testId}`;
+  }, 300);
+}
 function logout(){
 
   if(!confirm("Are you sure you want to logout?")) return;
@@ -654,6 +673,12 @@ function logout(){
   <div class="logoutBox">
     <div class="logoutSpinner"></div>
     Logging out… Please wait
+  </div>
+</div>
+  <div id="resultLoadingOverlay" style="display:none">
+  <div class="logoutBox">
+    <div class="logoutSpinner"></div>
+    Loading Answer Sheet… Please wait
   </div>
 </div>
 </body>
