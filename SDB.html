@@ -547,9 +547,17 @@ ${t.evaluated ? `onclick="toggleResultPanel('${t.id}')"` : ""}>
           ${
             t.evaluated
             ? `
-              <div class="resultMarks">
-                Marks: ${t.score ?? 0} / ${t.total}
-              </div>
+             <div class="resultMarks">
+  Marks: ${t.score} / ${t.total}
+</div>
+
+<div style="text-align:center;font-weight:600;margin-bottom:6px">
+  Maximum marks obtained: ${t.maxScore}
+</div>
+
+<div style="text-align:center;font-weight:600;color:#555">
+  Class average: ${t.avgScore}
+</div>
 
               <button class="btn-view"
                 onclick="location.href='results.html?test=${t.id}'">
