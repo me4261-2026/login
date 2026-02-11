@@ -172,7 +172,22 @@ button{
   background:#fff9c4;          /* PALE YELLOW */
   color:#555;
 }
+.resultPanel{
+  display:none;
+  margin-top:10px;
+  background:#f5f7fa;
+  border-radius:14px;
+  padding:14px;
+  box-shadow:0 6px 16px rgba(0,0,0,.12);
+}
 
+.resultMarks{
+  font-size:22px;
+  font-weight:800;
+  color:#1b5e20;
+  text-align:center;
+  margin-bottom:12px;
+}
 @keyframes blink{
   0%{ box-shadow:0 0 0 rgba(198,40,40,.4); }
   50%{ box-shadow:0 0 18px rgba(198,40,40,1); }
@@ -201,7 +216,21 @@ button{
   color:#555;
   box-shadow:0 12px 30px rgba(0,0,0,0.25);
 }
+.btn-view{
+  width:100%;
+  background:#3949ab;   /* Indigo */
+  color:#fff;
+  padding:12px;
+  border:none;
+  border-radius:30px;
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+}
 
+.btn-view:hover{
+  background:#283593;
+}
 .logoutSpinner{
   width:36px;
   height:36px;
@@ -274,7 +303,7 @@ footer{
 <!-- RESULTS -->
 <button class="btn-results" onclick="toggleResults()">Check Results</button>
 <div id="resultsLoading" class="loading" style="display:none">Loading… Please wait</div>
-<div id="resultsBox" class="dropdown"></div>
+<div id="resultsBox" class="testsContainer" style="display:none"></div>
 
 <!-- ATTENDANCE -->
 <button class="btn-attendance" onclick="toggleAttendance()">
@@ -504,27 +533,52 @@ function toggleResults(){
     resultsLoading.style.display="none";
     resultsBox.style.display="block";
 
-    resultsBox.innerHTML = res.tests.map(t => {
-
-      /* NOT EVALUATED → DISABLED */
-      if(!t.evaluated){
-        return `
-          <div class="testBtn test-upcoming">
-            ${t.name} (Results Not Published)
-          </div>
-        `;
-      }
-
-      /* EVALUATED → CLICKABLE */
-      return `
-        <div class="testBtn test-completed"
-             onclick="showResultDetails('${t.id}', ${t.score ?? 0})">
-          ${t.name} (View Results)
+    resultsBox.innerHTML = res.tests.map(t => `
+      <div class="testBlock">
+        <div class="testBtn ${
+  t.evaluated ? "test-completed" : "test-upcoming"
+}"
+${t.evaluated ? `onclick="toggleResultPanel('${t.id}')"` : ""}>
+          ${t.name}
+          ${t.evaluated ? "" : " (Not Published)"}
         </div>
-      `;
 
-    }).join("");
+        <div id="result_${t.id}" class="resultPanel">
+          ${
+            t.evaluated
+            ? `
+              <div class="resultMarks">
+                Marks: ${t.score} / ${t.total}
+              </div>
+
+              <button class="btn-view"
+                onclick="location.href='results.html?test=${t.id}'">
+                View Answer Sheet
+              </button>
+            `
+            : `
+              <div style="text-align:center;font-weight:600;color:#777">
+                Results not published yet
+              </div>
+            `
+          }
+        </div>
+      </div>
+    `).join("");
   });
+}
+  function toggleResultPanel(testId){
+  document.querySelectorAll(".resultPanel").forEach(p=>{
+    if(p.id !== "result_" + testId){
+      p.style.display = "none";
+    }
+  });
+
+  const panel = document.getElementById("result_" + testId);
+  if(!panel) return;
+
+  panel.style.display =
+    panel.style.display === "block" ? "none" : "block";
 }
   function showResultDetails(testId, score){
   resultsBox.innerHTML = `
