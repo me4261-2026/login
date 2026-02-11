@@ -6,6 +6,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+  .initial-loading{
+  text-align:center;
+  font-weight:700;
+  padding:20px;
+  color:#1565c0;
+}
 body{
   font-family:"Segoe UI",Arial;
   background:#f4f6f8;
@@ -80,8 +86,10 @@ body{
 </head>
 
 <body>
-
 <div class="header">Class Test Result</div>
+  <div id="initialLoader" class="initial-loading">
+  Loading answer sheet… Please wait
+</div>
 <div class="score" id="score"></div>
 <div id="content"></div>
 <script src="config.js"></script>
@@ -102,13 +110,14 @@ fetch(BACKEND,{
 })
 .then(r=>r.json())
 .then(res=>{
+   document.getElementById("initialLoader").style.display = "none";
   if(res.status !== "OK"){
     alert("Result not available");
     return;
   }
 
   document.getElementById("score").innerText =
-    `Score: ${res.score}`;
+    `Score: ${res.score} / ${res.questions.length}`;
 
   document.getElementById("content").innerHTML =
     res.questions.map((q,i)=>`
