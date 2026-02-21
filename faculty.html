@@ -114,9 +114,21 @@ button:disabled{opacity:.6;cursor:not-allowed;}
 
 <div id="home">
   <button class="btn-main" onclick="openClassTest()">Conduct Class Test</button>
+  <button class="btn-blue" onclick="openDownloads()">
+  Manage Downloads
+</button>
   <button class="btn-red" onclick="logout()">Logout</button>
 </div>
+<div id="downloadsSection" class="section">
+  <h2>Upload Lecture Notes</h2>
 
+  <div class="subCard">
+    <input type="file" id="pdfFile" accept="application/pdf" style="margin-bottom:12px;">
+    <button class="btn-main" onclick="uploadPDF()">Upload PDF</button>
+  </div>
+
+  <button class="btn-close" onclick="closeDownloads()">Close</button>
+</div>
 <div id="classTest" class="section">
   <h2>Conduct Class Test</h2>
 
@@ -252,7 +264,15 @@ if(btn && testStatus[id]){
   const p=document.getElementById(id);
   p.style.display=p.style.display==="block"?"none":"block";
 }
+function openDownloads(){
+  home.style.display="none";
+  downloadsSection.style.display="block";
+}
 
+function closeDownloads(){
+  downloadsSection.style.display="none";
+  home.style.display="block";
+}
 function showEnable(id){
   hideCustom(id);
   document.getElementById("enable_"+id).style.display="block";
@@ -288,7 +308,51 @@ function showCustom(id){
 function hideCustom(id){
   document.getElementById("custom_"+id).style.display="none";
 }
+function uploadPDF(){
 
+  const fileInput = document.getElementById("pdfFile");
+  const file = fileInput.files[0];
+
+  if(!file){
+    alert("Select a PDF file");
+    return;
+  }
+
+  if(file.type !== "application/pdf"){
+    alert("Only PDF files allowed");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function(){
+    const base64 = reader.result.split(",")[1];
+
+    showLoader();
+
+    fetch(BACKEND,{
+      method:"POST",
+      body:new URLSearchParams({
+        action:"uploadDownload",
+        token: facultyToken,
+        fileName: file.name,
+        fileData: base64
+      })
+    })
+    .then(r=>r.json())
+    .then(res=>{
+      hideLoader();
+      if(res.status === "OK" || res.status === "UPDATED"){
+        alert("Upload Successful");
+        fileInput.value="";
+      } else {
+        alert("Upload Failed");
+      }
+    });
+  };
+
+  reader.readAsDataURL(file);
+}
 /* ========= ENABLE TEST ========= */
 function enableTest(testId){
   const mode=document.querySelector(`input[name="enable_${testId}"]:checked`);
