@@ -190,7 +190,13 @@ button{
   padding:14px;
   box-shadow:0 6px 16px rgba(0,0,0,.12);
 }
-
+.btn-downloads{
+  background:#6a1b9a;   /* Purple */
+  color:#fff;
+}
+.btn-downloads:hover{
+  background:#4a148c;
+}
 .resultMarks{
   font-size:22px;
   font-weight:800;
@@ -331,7 +337,14 @@ footer{
 <button class="btn-results" onclick="toggleResults()">Check Results</button>
 <div id="resultsLoading" class="loading" style="display:none">Loading… Please wait</div>
 <div id="resultsBox" class="testsContainer" style="display:none"></div>
-
+<!-- DOWNLOADS -->
+<button class="btn-downloads" onclick="toggleDownloads()">
+  Downloads
+</button>
+<div id="downloadsLoading" class="loading" style="display:none">
+  Loading… Please wait
+</div>
+<div id="downloadsBox" class="testsContainer" style="display:none"></div>
 <!-- ATTENDANCE -->
 <button class="btn-attendance" onclick="toggleAttendance()">
   View Attendance Details
@@ -373,10 +386,13 @@ const resultsBox = document.getElementById("resultsBox");
 const attendanceBox = document.getElementById("attendanceBox");
 const testsLoading = document.getElementById("testsLoading");
 const resultsLoading = document.getElementById("resultsLoading");
+  const downloadsBox = document.getElementById("downloadsBox");
+const downloadsLoading = document.getElementById("downloadsLoading");
 function closeAll(){
   testsBox.style.display="none";
   resultsBox.style.display="none";
   attendanceBox.style.display="none";
+  downloadsBox.style.display="none";
   attendanceOpen = false;
 }
 
@@ -439,6 +455,58 @@ function toggleAttendance(){
     renderDates(presentDates, res.attended, "dateGreen");
     renderDates(absentDates,  res.absent,   "dateRed");
   });
+}
+  function toggleDownloads(){
+
+  if(downloadsBox.style.display === "block"){
+    downloadsBox.style.display = "none";
+    return;
+  }
+
+  closeAll();
+  downloadsLoading.style.display = "block";
+
+  fetch(BACKEND,{
+    method:"POST",
+    body:new URLSearchParams({
+      action:"getDownloads",
+      token
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    downloadsLoading.style.display = "none";
+    downloadsBox.style.display = "block";
+
+    if(res.status !== "OK" || !res.files || !res.files.length){
+      downloadsBox.innerHTML = `
+        <div class="testBtn test-upcoming">
+          No files available
+        </div>
+      `;
+      return;
+    }
+
+    downloadsBox.innerHTML = res.files.map(f => `
+      <div class="testBtn test-completed"
+           onclick="downloadFile('${f.url}')"
+           style="cursor:pointer">
+        ${f.name}
+        <div style="font-size:12px;margin-top:4px">
+          Click to Download
+        </div>
+      </div>
+    `).join("");
+  });
+}
+ function downloadFile(url){
+  const a = document.createElement("a");
+  a.href = url;
+  a.target = "_blank";
+  a.rel = "noopener";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 function renderDates(container, list, cls){
   if(!list || !list.length){
