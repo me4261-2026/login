@@ -61,17 +61,30 @@ button{
   cursor:pointer;
 }
 /* ANNOUNCEMENT BOX */
+/* ANNOUNCEMENT BOX – LIGHT RED WITH DARK BORDER */
 .announcementBox{
   background:#fdecea;              /* Light red */
   border:2px solid #b71c1c;        /* Dark red border */
-  color:#b71c1c;                   /* Dark red text */
   padding:16px;
   border-radius:14px;
   margin-top:14px;
-  font-weight:700;
   line-height:1.6;
   animation:announcementBlink 1.5s infinite;
 }
+
+/* Title (Black + Bold) */
+.announcementTitle{
+  color:#000;
+  font-weight:800;
+}
+
+/* List text (Red) */
+.announcementList{
+  color:#b71c1c;
+  font-weight:700;
+}
+
+/* Subtle border glow animation */
 @keyframes announcementBlink{
   0%{ box-shadow:0 0 0 rgba(183,28,28,.2); }
   50%{ box-shadow:0 0 18px rgba(183,28,28,.8); }
@@ -387,10 +400,15 @@ footer{
 
 <div id="contentArea" style="display:none">
 <div class="announcementBox">
-  The syllabus for mid-sem examination is:<br><br>
-  i) Types of thermal energy storage techniques<br>
-  ii) Heat pipes<br>
-  iii) Vapour chambers
+  <span class="announcementTitle">
+    The syllabus for mid-sem examination is:
+  </span>
+  <br><br>
+  <span class="announcementList">
+    i) Types of thermal energy storage techniques<br>
+    ii) Heat pipes<br>
+    iii) Vapour chambers
+  </span>
 </div>
 <div class="infoBox">
   Current Attendance Percentage
