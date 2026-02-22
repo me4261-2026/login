@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mock Test | ME4261</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --bg1:#0f2027;
+  --bg2:#203a43;
+  --bg3:#2c5364;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:"Segoe UI",Arial,sans-serif;
+  min-height:100vh;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
+  display:flex;
+  justify-content:center;
+  padding:20px 10px 80px;
+}
+
+.page{width:100%;max-width:700px}
+.card{
+  background:#fff;
+  border-radius:20px;
+  padding:22px;
+  box-shadow:0 20px 50px rgba(0,0,0,.28);
+}
+
+.header{
+  text-align:center;
+  font-weight:700;
+  font-size:18px;
+  margin-bottom:20px;
+}
+
+.questionBox{
+  margin-bottom:24px;
+  padding:16px;
+  border-radius:14px;
+  background:#f5f7fa;
+}
+
+.questionText{
+  font-weight:700;
+  margin-bottom:12px;
+}
+
+.option{
+  padding:10px;
+  margin:6px 0;
+  border-radius:10px;
+  border:1px solid #ccc;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.option:hover{
+  background:#e3f2fd;
+}
+
+.option.selected{
+  border:2px solid #1565c0;
+  background:#e3f2fd;
+}
+
+.option.correct{
+  background:#e8f5e9;
+  border:2px solid #2e7d32;
+  color:#1b5e20;
+}
+
+.option.wrong{
+  background:#fdecea;
+  border:2px solid #c62828;
+  color:#b71c1c;
+}
+
+.option.disabled{
+  pointer-events:none;
+}
+
+button{
+  width:100%;
+  padding:13px;
+  margin-top:14px;
+  border:none;
+  border-radius:30px;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.btn-submit{
+  background:#2e7d32;
+  color:#fff;
+}
+
+.btn-close{
+  background:#c62828;
+  color:#fff;
+}
+
+.scoreBox{
+  text-align:center;
+  font-size:18px;
+  font-weight:800;
+  padding:12px;
+  border-radius:12px;
+  margin-top:16px;
+  background:#e8f5e9;
+  color:#1b5e20;
+}
+
+.loading{
+  text-align:center;
+  font-weight:700;
+  color:#1565c0;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="page">
+<div class="card">
+
+<div class="header" id="mockTitle">
+Loading Mock Test...
+</div>
+
+<div id="loading" class="loading">
+Please wait...
+</div>
+
+<div id="questionsContainer"></div>
+
+<button id="submitBtn" class="btn-submit" style="display:none">
+Submit Mock Test
+</button>
+
+<button id="closeBtn" class="btn-close" style="display:none">
+Close
+</button>
+
+</div>
+</div>
+
+<script src="config.js"></script>
+<script>
+
+const BACKEND = BACKEND_URL;
+const token = sessionStorage.getItem("token");
+
+if(!token){
+  location.replace("index.html");
+}
+
+const params = new URLSearchParams(location.search);
+const mockId = params.get("mock");
+const mode = params.get("mode"); // fresh or review
+
+const loading = document.getElementById("loading");
+const container = document.getElementById("questionsContainer");
+const submitBtn = document.getElementById("submitBtn");
+const closeBtn = document.getElementById("closeBtn");
+const mockTitle = document.getElementById("mockTitle");
+
+let questions = [];
+let studentAnswers = {};
+
+if(!mockId){
+  location.replace("dashboard.html");
+}
+
+mockTitle.innerText = mockId === "mock1" ? "Mock Test – I" : "Mock Test – II";
+
+/* =========================
+   FETCH QUESTIONS
+========================= */
+
+fetch(BACKEND,{
+  method:"POST",
+  body:new URLSearchParams({
+    action:"getMockQuestions",
+    token,
+    mockId
+  })
+})
+.then(r=>r.json())
+.then(res=>{
+
+  if(res.status !== "OK"){
+    container.innerHTML = "<b>Unable to load mock test.</b>";
+    loading.style.display = "none";
+    return;
+  }
+
+  questions = res.questions;
+
+  renderQuestions();
+
+  loading.style.display = "none";
+
+  if(mode === "fresh"){
+    submitBtn.style.display = "block";
+  }
+  else{
+    closeBtn.style.display = "block";
+    applyReviewMode();
+  }
+
+});
+
+/* =========================
+   RENDER QUESTIONS
+========================= */
+
+function renderQuestions(){
+
+  container.innerHTML = questions.map((q,index)=>`
+
+    <div class="questionBox" id="q_${q.id}">
+      <div class="questionText">
+        Q${index+1}. ${q.question}
+      </div>
+
+      ${q.options.map((opt,i)=>`
+        <div class="option"
+             onclick="selectOption('${q.id}',${i},this)">
+          ${opt}
+        </div>
+      `).join("")}
+    </div>
+
+  `).join("");
+
+}
+
+/* =========================
+   SELECT OPTION (Fresh Mode)
+========================= */
+
+function selectOption(qid, optionIndex, element){
+
+  if(mode !== "fresh") return;
+
+  const parent = element.parentElement;
+  parent.querySelectorAll(".option").forEach(o=>{
+    o.classList.remove("selected");
+  });
+
+  element.classList.add("selected");
+
+  studentAnswers[qid] = optionIndex;
+}
+
+/* =========================
+   SUBMIT MOCK TEST
+========================= */
+
+submitBtn.onclick = function(){
+
+  if(Object.keys(studentAnswers).length !== questions.length){
+    alert("Please answer all questions before submitting.");
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.innerText = "Submitting...";
+
+  fetch(BACKEND,{
+    method:"POST",
+    body:new URLSearchParams({
+      action:"submitMock",
+      token,
+      mockId,
+      answers: JSON.stringify(studentAnswers)
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+
+    if(res.status === "OK"){
+      showScore(res.score, res.total);
+      applyReviewMode(res.correctAnswers);
+    }
+    else{
+      alert("Submission failed.");
+    }
+
+  });
+
+};
+
+/* =========================
+   REVIEW MODE
+========================= */
+
+function applyReviewMode(correctMap){
+
+  submitBtn.style.display = "none";
+  closeBtn.style.display = "block";
+
+  questions.forEach(q=>{
+
+    const qBox = document.getElementById("q_"+q.id);
+    const options = qBox.querySelectorAll(".option");
+
+    options.forEach((opt,i)=>{
+      opt.classList.add("disabled");
+
+      const correctIndex = correctMap
+        ? correctMap[q.id]
+        : q.correct;
+
+      const studentAns = q.studentAnswer;
+
+      if(i === correctIndex){
+        opt.classList.add("correct");
+      }
+
+      if(studentAns !== undefined && i === studentAns && i !== correctIndex){
+        opt.classList.add("wrong");
+      }
+
+    });
+
+  });
+
+}
+
+/* =========================
+   SHOW SCORE
+========================= */
+
+function showScore(score,total){
+
+  const scoreDiv = document.createElement("div");
+  scoreDiv.className = "scoreBox";
+  scoreDiv.innerText = `Your Score: ${score} / ${total}`;
+  container.prepend(scoreDiv);
+
+}
+
+/* =========================
+   CLOSE BUTTON
+========================= */
+
+closeBtn.onclick = function(){
+  location.replace("dashboard.html");
+};
+
+</script>
+
+</body>
+</html>
