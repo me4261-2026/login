@@ -771,7 +771,7 @@ ${t.evaluated ? `onclick="toggleResultPanel('${t.id}')"` : ""}>
     `;
   }, 300);
 }
- function handleMockClick(mockId){
+function handleMockClick(mockId){
 
   // Disable all buttons
   document.querySelectorAll("button").forEach(btn=>{
@@ -795,43 +795,43 @@ ${t.evaluated ? `onclick="toggleResultPanel('${t.id}')"` : ""}>
 
     if(res.attempted){
 
-     document.getElementById("mockLoadingOverlay").style.display = "none";
+      // Hide overlay before confirm
+      document.getElementById("mockLoadingOverlay").style.display = "none";
 
-const reattempt = confirm(
-  "You completed this mock test.\n\n" +
-  "Would you like to Reattempt?"
-);
+      const reattempt = confirm(
+        "You completed this mock test.\n\n" +
+        "Would you like to Reattempt?"
+      );
 
-if(!reattempt){
-  // Re-enable buttons if user cancels
-  document.querySelectorAll("button").forEach(btn=>{
-    btn.disabled = false;
-    btn.style.opacity = "1";
-  });
-}
-
-      if(reattempt){
-        fetch(BACKEND,{
-          method:"POST",
-          body:new URLSearchParams({
-            action:"resetMock",
-            token,
-            mockId
-          })
-        })
-        .then(r=>r.json())
-        .then(resp=>{
-          if(resp.status === "RESET"){
-            location.href = `mocktest.html?mock=${mockId}&mode=fresh`;
-          } else {
-            alert("Unable to reset mock. Please try again.");
-            location.reload();
-          }
+      if(!reattempt){
+        // Re-enable buttons
+        document.querySelectorAll("button").forEach(btn=>{
+          btn.disabled = false;
+          btn.style.opacity = "1";
         });
+        return;
       }
-      else{
-        location.href = `mocktest.html?mock=${mockId}&mode=review`;
-      }
+
+      // Show overlay again for reset + redirect
+      document.getElementById("mockLoadingOverlay").style.display = "flex";
+
+      fetch(BACKEND,{
+        method:"POST",
+        body:new URLSearchParams({
+          action:"resetMock",
+          token,
+          mockId
+        })
+      })
+      .then(r=>r.json())
+      .then(resp=>{
+        if(resp.status === "RESET"){
+          location.href = `mocktest.html?mock=${mockId}&mode=fresh`;
+        } else {
+          alert("Unable to reset mock. Please try again.");
+          location.reload();
+        }
+      });
 
     }
     else{
