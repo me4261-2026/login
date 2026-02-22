@@ -60,7 +60,24 @@ button{
   font-weight:700;
   cursor:pointer;
 }
+/* ANNOUNCEMENT BOX */
+.announcementBox{
+  background:#c62828;
+  color:#fff;
+  padding:16px;
+  border-radius:14px;
+  margin-top:14px;
+  font-weight:700;
+  line-height:1.6;
+  box-shadow:0 8px 20px rgba(0,0,0,.25);
+  animation:announcementBlink 1.5s infinite;
+}
 
+@keyframes announcementBlink{
+  0%{ box-shadow:0 0 0 rgba(198,40,40,.4); }
+  50%{ box-shadow:0 0 25px rgba(198,40,40,1); }
+  100%{ box-shadow:0 0 0 rgba(198,40,40,.4); }
+}
 /* BUTTON COLORS */
 .btn-tests{
   background:#3949ab;        /* Indigo */
@@ -100,7 +117,18 @@ button{
   border-radius:14px;
   font-weight:600;
 }
+.mock-active{
+  background:#6d4c41;      /* Brown */
+  color:#fff;
+  cursor:pointer;
+  animation:mockBlink 1.5s infinite;
+}
 
+@keyframes mockBlink{
+  0%{ box-shadow:0 0 0 rgba(109,76,65,.4); }
+  50%{ box-shadow:0 0 18px rgba(109,76,65,1); }
+  100%{ box-shadow:0 0 0 rgba(109,76,65,.4); }
+}
 .presentBox{
   background:#e8f5e9;
   border:1px solid #c8e6c9;
@@ -240,7 +268,12 @@ button{
   justify-content:center;
   z-index:9999;
 }
-
+/* SMALL DOWNLOAD BUTTON */
+.downloadBtn{
+  padding:9px 14px;
+  font-size:13px;
+  border-radius:20px;
+}
 .logoutBox{
   background:#fff;
   padding:24px 28px;
@@ -354,7 +387,12 @@ footer{
 </div>
 
 <div id="contentArea" style="display:none">
-
+<div class="announcementBox">
+  The syllabus for mid-sem examination is:<br><br>
+  i) Types of thermal energy storage techniques<br>
+  ii) Heat pipes<br>
+  iii) Vapour chambers
+</div>
 <div class="infoBox">
   Current Attendance Percentage
   <div id="attendanceValue" class="attendanceValue">—</div>
@@ -548,15 +586,15 @@ function toggleAttendance(){
     }
 
     downloadsBox.innerHTML = res.files.map(f => `
-      <div class="testBtn test-completed"
-           onclick="downloadFile('${f.url}')"
-           style="cursor:pointer">
-        ${f.name}
-        <div style="font-size:12px;margin-top:4px">
-          Click to Download
-        </div>
-      </div>
-    `).join("");
+  <div class="testBtn test-completed downloadBtn"
+       onclick="downloadFile('${f.url}')"
+       style="cursor:pointer">
+    ${f.name}
+    <div style="font-size:11px;margin-top:3px">
+      Click to Download
+    </div>
+  </div>
+`).join("");
   });
 }
  function downloadFile(url){
@@ -759,12 +797,12 @@ ${t.evaluated ? `onclick="toggleResultPanel('${t.id}')"` : ""}>
     mockBox.style.display = "block";
 
     mockBox.innerHTML = `
-      <div class="testBtn test-active"
+      <div class="testBtn mock-active"
            onclick="handleMockClick('mock1')">
         Mock Test – I
       </div>
 
-      <div class="testBtn test-active"
+      <div class="testBtn mock-active"
            onclick="handleMockClick('mock2')">
         Mock Test – II
       </div>
