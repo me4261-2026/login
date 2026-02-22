@@ -74,14 +74,16 @@ button{
 
 /* Title (Black + Bold) */
 .announcementTitle{
-  color:#000;
+  text-align:center;
   font-weight:800;
+  font-size:16px;
+  color:#000;                 /* Black */
+  margin-bottom:10px;
 }
 
-/* List text (Red) */
-.announcementList{
-  color:#b71c1c;
-  font-weight:700;
+.announcementContent{
+  color:#b71c1c;               /* Dark red */
+  font-weight:600;
 }
 
 /* Subtle border glow animation */
@@ -403,15 +405,15 @@ footer{
 
 <div id="contentArea" style="display:none">
 <div class="announcementBox">
-  <span class="announcementTitle">
-    The syllabus for mid-sem examination is:
-  </span>
-  <br><br>
-  <span class="announcementList">
+  <div class="announcementTitle">
+    Syllabus for Mid-Sem
+  </div>
+
+  <div class="announcementContent">
     i) Types of thermal energy storage techniques<br>
     ii) Heat pipes<br>
     iii) Vapour chambers
-  </span>
+  </div>
 </div>
 <div class="infoBox">
   Current Attendance Percentage
