@@ -209,6 +209,15 @@ button{
   50%{ box-shadow:0 0 18px rgba(198,40,40,1); }
   100%{ box-shadow:0 0 0 rgba(198,40,40,.4); }
 }
+  #mockLoadingOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.35);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
 .dateRed{
   background:#ffcdd2;
   color:#b71c1c;
@@ -762,7 +771,16 @@ ${t.evaluated ? `onclick="toggleResultPanel('${t.id}')"` : ""}>
     `;
   }, 300);
 }
-  function handleMockClick(mockId){
+ function handleMockClick(mockId){
+
+  // Disable all buttons
+  document.querySelectorAll("button").forEach(btn=>{
+    btn.disabled = true;
+    btn.style.opacity = "0.6";
+  });
+
+  // Show loading overlay
+  document.getElementById("mockLoadingOverlay").style.display = "flex";
 
   fetch(BACKEND,{
     method:"POST",
@@ -777,29 +795,39 @@ ${t.evaluated ? `onclick="toggleResultPanel('${t.id}')"` : ""}>
 
     if(res.attempted){
 
-      const reattempt = confirm(
-        "You completed this mock test.\n\n" +
-        "Would you like to Reattempt?"
-      );
+     document.getElementById("mockLoadingOverlay").style.display = "none";
+
+const reattempt = confirm(
+  "You completed this mock test.\n\n" +
+  "Would you like to Reattempt?"
+);
+
+if(!reattempt){
+  // Re-enable buttons if user cancels
+  document.querySelectorAll("button").forEach(btn=>{
+    btn.disabled = false;
+    btn.style.opacity = "1";
+  });
+}
 
       if(reattempt){
-        // Clear previous answers
         fetch(BACKEND,{
-  method:"POST",
-  body:new URLSearchParams({
-    action:"resetMock",
-    token,
-    mockId
-  })
-})
-.then(r=>r.json())
-.then(resp=>{
-  if(resp.status === "RESET"){
-    location.href = `mocktest.html?mock=${mockId}&mode=fresh`;
-  } else {
-    alert("Unable to reset mock. Please try again.");
-  }
-});
+          method:"POST",
+          body:new URLSearchParams({
+            action:"resetMock",
+            token,
+            mockId
+          })
+        })
+        .then(r=>r.json())
+        .then(resp=>{
+          if(resp.status === "RESET"){
+            location.href = `mocktest.html?mock=${mockId}&mode=fresh`;
+          } else {
+            alert("Unable to reset mock. Please try again.");
+            location.reload();
+          }
+        });
       }
       else{
         location.href = `mocktest.html?mock=${mockId}&mode=review`;
@@ -810,6 +838,10 @@ ${t.evaluated ? `onclick="toggleResultPanel('${t.id}')"` : ""}>
       location.href = `mocktest.html?mock=${mockId}&mode=fresh`;
     }
 
+  })
+  .catch(()=>{
+    alert("Network error. Please try again.");
+    location.reload();
   });
 }
   function toggleResultPanel(testId){
@@ -899,6 +931,12 @@ function logout(){
   <div class="logoutBox">
     <div class="logoutSpinner"></div>
     Loading Answer Sheet… Please wait
+  </div>
+</div>
+  <div id="mockLoadingOverlay" style="display:none">
+  <div class="logoutBox">
+    <div class="logoutSpinner"></div>
+    Loading Mock Test… Please wait
   </div>
 </div>
 </body>
