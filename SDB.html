@@ -271,6 +271,29 @@ button{
   color:#1565c0;   /* Professional Blue */
   margin-bottom:6px;
 }
+  .option{
+  padding:10px;
+  margin:6px 0;
+  border-radius:10px;
+  border:1px solid #ccc;
+  cursor:pointer;
+}
+
+.option.correct{
+  background:#e8f5e9;
+  border:2px solid #2e7d32;
+  color:#1b5e20;
+}
+
+.option.wrong{
+  background:#fdecea;
+  border:2px solid #c62828;
+  color:#b71c1c;
+}
+
+.option.disabled{
+  pointer-events:none;
+}
 .btn-view{
   background:#3949ab;      /* Indigo */
   color:#fff;
@@ -337,6 +360,18 @@ footer{
 <button class="btn-results" onclick="toggleResults()">Check Results</button>
 <div id="resultsLoading" class="loading" style="display:none">Loading… Please wait</div>
 <div id="resultsBox" class="testsContainer" style="display:none"></div>
+
+  <!-- MOCK TESTS -->
+<button class="btn-tests" onclick="toggleMockTests()">
+  Mock Tests
+</button>
+
+<div id="mockLoading" class="loading" style="display:none">
+  Loading… Please wait
+</div>
+
+<div id="mockBox" class="testsContainer" style="display:none"></div>
+  
 <!-- DOWNLOADS -->
 <button class="btn-downloads" onclick="toggleDownloads()">
   Downloads
@@ -388,11 +423,17 @@ const testsLoading = document.getElementById("testsLoading");
 const resultsLoading = document.getElementById("resultsLoading");
   const downloadsBox = document.getElementById("downloadsBox");
 const downloadsLoading = document.getElementById("downloadsLoading");
+  const mockBox = document.getElementById("mockBox");
+const mockLoading = document.getElementById("mockLoading");
+  const params = new URLSearchParams(location.search);
+const mockId = params.get("mock");
+const mode = params.get("mode"); // fresh or review
 function closeAll(){
   testsBox.style.display="none";
   resultsBox.style.display="none";
   attendanceBox.style.display="none";
   downloadsBox.style.display="none";
+  mockBox.style.display="none";   // ADD THIS
   attendanceOpen = false;
 }
 
@@ -681,6 +722,78 @@ ${t.evaluated ? `onclick="toggleResultPanel('${t.id}')"` : ""}>
         </div>
       </div>
     `).join("");
+  });
+}
+  function toggleMockTests(){
+
+  if(mockBox.style.display === "block"){
+    mockBox.style.display = "none";
+    return;
+  }
+
+  closeAll();
+  mockLoading.style.display = "block";
+
+  // Since only 2 static mock tests
+  setTimeout(()=>{
+    mockLoading.style.display = "none";
+    mockBox.style.display = "block";
+
+    mockBox.innerHTML = `
+      <div class="testBtn test-active"
+           onclick="handleMockClick('mock1')">
+        Mock Test – I
+      </div>
+
+      <div class="testBtn test-active"
+           onclick="handleMockClick('mock2')">
+        Mock Test – II
+      </div>
+    `;
+  }, 300);
+}
+  function handleMockClick(mockId){
+
+  fetch(BACKEND,{
+    method:"POST",
+    body:new URLSearchParams({
+      action:"checkMockAttempt",
+      token,
+      mockId
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+
+    if(res.attempted){
+
+      const reattempt = confirm(
+        "You completed this mock test.\n\n" +
+        "Would you like to Reattempt?"
+      );
+
+      if(reattempt){
+        // Clear previous answers
+        fetch(BACKEND,{
+          method:"POST",
+          body:new URLSearchParams({
+            action:"resetMock",
+            token,
+            mockId
+          })
+        }).then(()=>{
+          location.href = `mocktest.html?mock=${mockId}&mode=fresh`;
+        });
+      }
+      else{
+        location.href = `mocktest.html?mock=${mockId}&mode=review`;
+      }
+
+    }
+    else{
+      location.href = `mocktest.html?mock=${mockId}&mode=fresh`;
+    }
+
   });
 }
   function toggleResultPanel(testId){
