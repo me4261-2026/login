@@ -416,6 +416,9 @@ Developed by Dr. Rajesh Akula
   
 const BACKEND=BACKEND_URL;
 const token=sessionStorage.getItem("token");
+if(!token){
+  location.replace("index.html");
+}  
 const testsBox = document.getElementById("testsBox");
 const resultsBox = document.getElementById("resultsBox");
 const attendanceBox = document.getElementById("attendanceBox");
@@ -441,6 +444,13 @@ Promise.all([
   fetch(BACKEND,{method:"POST",body:new URLSearchParams({action:"dashboard",token})}).then(r=>r.json()),
   fetch(BACKEND,{method:"POST",body:new URLSearchParams({action:"getMyAttendance",token})}).then(r=>r.json())
 ]).then(([d,a])=>{
+
+  if(d.status !== "OK"){
+    sessionStorage.clear();
+    location.replace("index.html");
+    return;
+  }
+
   loadingBox.style.display="none";
   contentArea.style.display="block";
   welcomeBox.style.display="block";
@@ -775,15 +785,21 @@ ${t.evaluated ? `onclick="toggleResultPanel('${t.id}')"` : ""}>
       if(reattempt){
         // Clear previous answers
         fetch(BACKEND,{
-          method:"POST",
-          body:new URLSearchParams({
-            action:"resetMock",
-            token,
-            mockId
-          })
-        }).then(()=>{
-          location.href = `mocktest.html?mock=${mockId}&mode=fresh`;
-        });
+  method:"POST",
+  body:new URLSearchParams({
+    action:"resetMock",
+    token,
+    mockId
+  })
+})
+.then(r=>r.json())
+.then(resp=>{
+  if(resp.status === "RESET"){
+    location.href = `mocktest.html?mock=${mockId}&mode=fresh`;
+  } else {
+    alert("Unable to reset mock. Please try again.");
+  }
+});
       }
       else{
         location.href = `mocktest.html?mock=${mockId}&mode=review`;
@@ -830,19 +846,7 @@ ${t.evaluated ? `onclick="toggleResultPanel('${t.id}')"` : ""}>
     </button>
   `;
 }
-function confirmStartTest(testId){
-  const ok = confirm(
-    "Are you sure you want to start the test?\n\n" +
-    "• Test duration is fixed\n" +
-    "• Leaving the page will auto-submit\n" +
-    "• Re-attempt is NOT allowed\n\n" +
-    "Click OK to start the test."
-  );
 
-  if(!ok) return;
-
-  location.href = `test.html?test=${testId}`;
-}
  function openAnswerSheet(testId){
 
   // Disable buttons
