@@ -201,7 +201,13 @@ fetch(BACKEND,{
   }
 
   questions = res.questions;
-
+  if(mode !== "fresh"){
+  questions.forEach(q=>{
+    if(q.studentAnswer !== undefined){
+      studentAnswers[q.id] = q.studentAnswer;
+    }
+  });
+}
   renderQuestions();
 
   loading.style.display = "none";
@@ -265,7 +271,7 @@ function selectOption(qid, optionIndex, element){
 
 submitBtn.onclick = function(){
 
-  if(Object.keys(studentAnswers).length !== questions.length){
+  if(questions.some(q => studentAnswers[q.id] === undefined)){
     alert("Please answer all questions before submitting.");
     return;
   }
@@ -311,14 +317,14 @@ function applyReviewMode(correctMap){
     const qBox = document.getElementById("q_"+q.id);
     const options = qBox.querySelectorAll(".option");
 
+    const correctIndex = correctMap
+      ? correctMap[q.id]
+      : q.correct;
+
+    const studentAns = studentAnswers[q.id] ?? q.studentAnswer;
+
     options.forEach((opt,i)=>{
       opt.classList.add("disabled");
-
-      const correctIndex = correctMap
-        ? correctMap[q.id]
-        : q.correct;
-
-      const studentAns = q.studentAnswer;
 
       if(i === correctIndex){
         opt.classList.add("correct");
@@ -327,7 +333,6 @@ function applyReviewMode(correctMap){
       if(studentAns !== undefined && i === studentAns && i !== correctIndex){
         opt.classList.add("wrong");
       }
-
     });
 
   });
