@@ -45,7 +45,32 @@ body{
   text-align:center;
   font-weight:600;
 }
+/* NEW BADGE */
+.newBadge{
+  display:inline-block;
+  margin-left:8px;
+  padding:3px 8px;
+  font-size:11px;
+  font-weight:800;
+  border-radius:12px;
+  animation:newBlink 1s infinite alternate;
+}
 
+/* Color-changing blink */
+@keyframes newBlink{
+  0%{
+    background:#ff1744;
+    color:#fff;
+  }
+  50%{
+    background:#ff9100;
+    color:#000;
+  }
+  100%{
+    background:#00c853;
+    color:#fff;
+  }
+}
 .attendanceValue{font-size:26px;font-weight:800;margin-top:8px}
 .attendance-good{color:#1b5e20}
 .attendance-bad{color:#b71c1c}
@@ -569,7 +594,7 @@ function toggleAttendance(){
     renderDates(absentDates,  res.absent,   "dateRed");
   });
 }
-  function toggleDownloads(){
+ function toggleDownloads(){
 
   if(downloadsBox.style.display === "block"){
     downloadsBox.style.display = "none";
@@ -600,16 +625,47 @@ function toggleAttendance(){
       return;
     }
 
-    downloadsBox.innerHTML = res.files.map(f => `
-  <div class="testBtn test-completed downloadBtn"
-       onclick="downloadFile('${f.url}')"
-       style="cursor:pointer">
-    ${f.name}
-    <div style="font-size:11px;margin-top:3px">
-      Click to Download
-    </div>
-  </div>
-`).join("");
+    // Sort newest first (safe if uploadedOn missing)
+    res.files.sort((a,b)=> 
+      new Date(b.uploadedOn || 0) - new Date(a.uploadedOn || 0)
+    );
+
+    downloadsBox.innerHTML = res.files.map(f => {
+
+      const today = new Date();
+      today.setHours(0,0,0,0);   // normalize today
+
+      const uploadDate = f.uploadedOn ? new Date(f.uploadedOn) : null;
+
+      let isNew = false;
+
+      if(uploadDate && !isNaN(uploadDate)){
+        uploadDate.setHours(0,0,0,0);   // normalize upload date
+        const diffDays = (today - uploadDate) / (1000 * 60 * 60 * 24);
+        isNew = diffDays >= 0 && diffDays <= 2;
+      }
+
+      return `
+        <div class="testBtn test-completed downloadBtn"
+             onclick="downloadFile('${f.url}')"
+             style="cursor:pointer">
+          ${f.name}
+          ${isNew ? `<span class="newBadge">NEW</span>` : ""}
+          <div style="font-size:11px;margin-top:3px">
+            Click to Download
+          </div>
+        </div>
+      `;
+    }).join("");
+
+  })
+  .catch(()=>{
+    downloadsLoading.style.display = "none";
+    downloadsBox.innerHTML = `
+      <div class="testBtn test-upcoming">
+        Unable to load downloads
+      </div>
+    `;
   });
 }
  function downloadFile(url){
