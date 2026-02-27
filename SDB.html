@@ -422,7 +422,8 @@ footer{
 </div>
 
 <div id="contentArea" style="display:none">
-<!--<div class="announcementBox">
+ <!-- 
+<div class="announcementBox">
   <div class="announcementTitle">
     Syllabus for Mid-Sem
   </div>
@@ -594,7 +595,7 @@ function toggleAttendance(){
     renderDates(absentDates,  res.absent,   "dateRed");
   });
 }
- function toggleDownloads(){
+function toggleDownloads(){
 
   if(downloadsBox.style.display === "block"){
     downloadsBox.style.display = "none";
@@ -625,75 +626,48 @@ function toggleAttendance(){
       return;
     }
 
-    // Sort newest first (safe if uploadedOn missing)
     res.files.sort((a,b)=> 
       new Date(b.uploadedOn || 0) - new Date(a.uploadedOn || 0)
     );
 
-    downloadsBox.innerHTML = res.files.map(f => {
+    const today = new Date();
+    today.setHours(0,0,0,0);
 
-      const today = new Date();
-      today.setHours(0,0,0,0);   // normalize today
+    downloadsBox.innerHTML = res.files.map(f => {
 
       const uploadDate = f.uploadedOn ? new Date(f.uploadedOn) : null;
 
       let isNew = false;
+      let formattedDate = "";
 
       if(uploadDate && !isNaN(uploadDate)){
-        uploadDate.setHours(0,0,0,0);   // normalize upload date
+        uploadDate.setHours(0,0,0,0);
         const diffDays = (today - uploadDate) / (1000 * 60 * 60 * 24);
         isNew = diffDays >= 0 && diffDays <= 2;
+
+        formattedDate = uploadDate.toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric"
+        });
       }
 
       return `
         <div class="testBtn test-completed downloadBtn"
              onclick="downloadFile('${f.url}')"
              style="cursor:pointer">
+
           ${f.name}
           ${isNew ? `<span class="newBadge">NEW</span>` : ""}
-          downloadsBox.innerHTML = res.files.map(f => {
 
-  const today = new Date();
-  today.setHours(0,0,0,0);
+          <div style="font-size:11px;margin-top:6px;opacity:0.9">
+            Uploaded on: ${formattedDate || "—"}
+          </div>
 
-  const uploadDate = f.uploadedOn ? new Date(f.uploadedOn) : null;
+          <div style="font-size:11px;margin-top:2px;opacity:0.8">
+            Click to Download
+          </div>
 
-  let isNew = false;
-  let formattedDate = "";
-
-  if(uploadDate && !isNaN(uploadDate)){
-    uploadDate.setHours(0,0,0,0);
-
-    const diffDays = (today - uploadDate) / (1000 * 60 * 60 * 24);
-    isNew = diffDays >= 0 && diffDays <= 2;
-
-    // Format date nicely
-    formattedDate = uploadDate.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric"
-    });
-  }
-
-  return `
-    <div class="testBtn test-completed downloadBtn"
-         onclick="downloadFile('${f.url}')"
-         style="cursor:pointer">
-
-      ${f.name}
-      ${isNew ? `<span class="newBadge">NEW</span>` : ""}
-
-      <div style="font-size:11px;margin-top:6px;opacity:0.9">
-        Uploaded on: ${formattedDate || "—"}
-      </div>
-
-      <div style="font-size:11px;margin-top:2px;opacity:0.8">
-        Click to Download
-      </div>
-
-    </div>
-  `;
-}).join("");
         </div>
       `;
     }).join("");
