@@ -180,7 +180,59 @@ button:disabled{opacity:.6;cursor:not-allowed;}
 
     </div>
   </div>
+<div class="testBlock">
+<button class="testBtn btn-blue" onclick="toggleTest('CT2')">
+  Class Test – II
+  <span id="status_CT2" style="font-size:13px;margin-left:6px;"></span>
+</button>
 
+<div id="CT2" class="testPanel">
+
+<div class="subCard">
+<label class="radioRow">
+<input type="radio" name="action_CT2" onclick="showEnable('CT2')">
+Enable Class Test
+</label>
+
+<label class="radioRow">
+<input type="radio" name="action_CT2" onclick="showEvaluate('CT2')">
+Evaluate Class Test
+</label>
+</div>
+
+<div id="enable_CT2" class="subCard" style="display:none;">
+
+<label class="radioRow">
+<input type="radio" name="enable_CT2" value="ALL" onclick="hideCustom('CT2')">
+Enable for all students
+</label>
+
+<label class="radioRow">
+<input type="radio" name="enable_CT2" value="ATTENDED" onclick="hideCustom('CT2')">
+Enable for attended students
+</label>
+
+<label class="radioRow">
+<input type="radio" name="enable_CT2" value="CUSTOM" onclick="showCustom('CT2')">
+Custom selection
+</label>
+
+<div id="custom_CT2" class="customList"></div>
+
+<button class="btn-main" onclick="enableTest('CT2')">Enable Test</button>
+
+</div>
+
+<div id="eval_CT2" class="subCard" style="display:none;">
+<button class="btn-main"
+id="evalBtn_CT2"
+onclick="evaluateTest('CT2')">
+Evaluate & Publish Results
+</button>
+</div>
+
+</div>
+</div>
   <button class="btn-close" onclick="closeSection()">Close</button>
 </div>
 
