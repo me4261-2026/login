@@ -917,8 +917,14 @@ function toggleExamSummary(){
     summaryLoading.style.display = "none";
     summaryBox.style.display = "block";
 
-    function getMarks(name, max){
-  const test = res.tests.find(t => t.name === name);
+   function getMarks(name, max){
+
+  const normalize = str =>
+    str.toLowerCase().replace(/\s|-/g,'');
+
+  const test = res.tests.find(t => 
+    normalize(t.name) === normalize(name)
+  );
 
   if(!test) return {text:"-", val:null};
 
