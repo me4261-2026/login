@@ -438,15 +438,26 @@ footer{
 </div>
 
 <!-- CLASS TESTS -->
-<button class="btn-tests" onclick="toggleClassTests()">Class Tests</button>
+<button class="btn-tests" onclick="toggleClassTests()">Class Tests (CT)</button>
 <div id="testsLoading" class="loading" style="display:none">Loading… Please wait</div>
 <div id="testsBox" class="testsContainer" style="display:none"></div>
 
-<!-- RESULTS -->
-<button class="btn-results" onclick="toggleResults()"> Results/Answer Sheets </button>
+<!-- Answer Sheets -->
+<button class="btn-results" onclick="toggleResults()"> Answer Sheets (CT) </button>
 <div id="resultsLoading" class="loading" style="display:none">Loading… Please wait</div>
 <div id="resultsBox" class="testsContainer" style="display:none"></div>
+  
+<!--Results-->
+<button class="btn-results" onclick="toggleExamSummary()">
+  Exam Summary
+</button>
 
+<div id="summaryLoading" class="loading" style="display:none">
+  Loading… Please wait
+</div>
+
+<div id="summaryBox" class="testsContainer" style="display:none"></div>
+  
   <!-- MOCK TESTS -->
 <button class="btn-tests" onclick="toggleMockTests()">
   Mock Tests
@@ -520,6 +531,7 @@ const mode = params.get("mode"); // fresh or review
 function closeAll(){
   testsBox.style.display="none";
   resultsBox.style.display="none";
+  summaryBox.style.display="none";
   attendanceBox.style.display="none";
   downloadsBox.style.display="none";
   mockBox.style.display="none";   // ADD THIS
@@ -794,6 +806,7 @@ function prettyDate(d){
 
   return `${day}${suf} ${dt.toLocaleString("en",{month:"short"})} ${dt.getFullYear()}`;
 }
+  
 function toggleResults(){
   if(resultsBox.style.display==="block"){
     resultsBox.style.display="none";
@@ -862,6 +875,118 @@ ${t.evaluated ? `onclick="toggleResultPanel('${t.id}')"` : ""}>
         </div>
       </div>
     `).join("");
+  });
+}
+  const summaryBox = document.getElementById("summaryBox");
+const summaryLoading = document.getElementById("summaryLoading");
+
+function toggleExamSummary(){
+
+  if(summaryBox.style.display === "block"){
+    summaryBox.style.display = "none";
+    return;
+  }
+
+  closeAll();
+  summaryLoading.style.display = "block";
+
+  fetch(BACKEND,{
+    method:"POST",
+    body:new URLSearchParams({
+      action:"getStudentTestStatus",
+      token
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+
+    summaryLoading.style.display = "none";
+    summaryBox.style.display = "block";
+
+    const exams = [
+      "Class Test - I",
+      "Class Test - II",
+      "Class Test - III",
+      "Class Test - IV",
+      "Mid-Sem",
+      "End-Sem"
+    ];
+
+    function getMaxMarks(name){
+      if(name.includes("Class Test")) return 5;
+      if(name.includes("Mid")) return 10;
+      if(name.includes("End")) return 20;
+      return 0;
+    }
+
+    function getCarryMarks(name, marks){
+      if(name.includes("Class Test")) return marks * 0.5;
+      return marks; // Mid & End → full carry
+    }
+
+    let totalCarry = 0;
+
+    const rows = exams.map(exam => {
+
+      const test = res.tests.find(t => t.name === exam);
+
+      let marksText = "To be updated";
+      let carry = 0;
+
+      if(test){
+
+        const max = getMaxMarks(exam);
+
+        if(test.evaluated){
+
+          const marks = test.score ?? 0;
+          marksText = `${marks} / ${max}`;
+
+          carry = getCarryMarks(exam, marks);
+        }
+        else if(test.globallyAttempted){
+          marksText = `0 / ${max}`;
+          carry = 0;
+        }
+      }
+
+      totalCarry += carry;
+
+      return `
+        <tr>
+          <td>${exam}</td>
+          <td>${marksText}</td>
+          <td>${carry.toFixed(2)}</td>
+        </tr>
+      `;
+    }).join("");
+
+    summaryBox.innerHTML = `
+      <div style="overflow-x:auto">
+
+        <table style="
+          width:100%;
+          border-collapse:collapse;
+          text-align:center;
+          font-weight:600;
+        ">
+          <tr style="background:#3949ab;color:#fff">
+            <th>Exam</th>
+            <th>Marks Obtained</th>
+            <th>Marks Carry Forward</th>
+          </tr>
+
+          ${rows}
+
+          <tr style="background:#e8f5e9;font-weight:800">
+            <td>Total</td>
+            <td>—</td>
+            <td>${totalCarry.toFixed(2)}</td>
+          </tr>
+        </table>
+
+      </div>
+    `;
   });
 }
   function toggleMockTests(){
