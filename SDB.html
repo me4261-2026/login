@@ -913,7 +913,7 @@ function toggleExamSummary(){
     function getMarks(name, max){
   const test = res.tests.find(t => t.name === name);
 
-  if(!test) return {text:"To be updated", val:null};
+  if(!test) return {text:"-", val:null};
 
   if(test.evaluated){
     return {
@@ -926,7 +926,7 @@ function toggleExamSummary(){
     return {text:`0 / ${max}`, val:0};
   }
 
-  return {text:"To be updated", val:null};
+  return {text:"-", val:null};
 }
 
     // ===== GET DATA =====
@@ -949,7 +949,12 @@ const total =
       <div style="overflow-x:auto">
 
       <table style="width:100%;border-collapse:collapse;text-align:center;font-weight:600">
-
+      <!-- HEADER -->
+      <tr style="background:#3949ab;color:#fff;font-weight:800">
+      <th>Exam</th>
+      <th>Marks</th>
+      <th>Carry Forward</th>
+      </tr>
         <!-- CT SECTION -->
         <tr style="background:#e3f2fd;color:#0d47a1">
           <td>CT - 1</td><td>${ct1.text}</td><td>${ct1.val !== null ? (ct1.val*0.5).toFixed(2) : "-"}</td>
