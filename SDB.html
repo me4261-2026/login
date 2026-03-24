@@ -918,14 +918,9 @@ function toggleExamSummary(){
     summaryLoading.style.display = "none";
     summaryBox.style.display = "block";
 
-   function getMarks(name, max){
+   function getMarksById(testId, max){
 
-  const normalize = str =>
-    str.toLowerCase().replace(/\s|-/g,'');
-
-  const test = res.tests.find(t => 
-    normalize(t.name) === normalize(name)
-  );
+  const test = res.tests.find(t => t.id === testId);
 
   if(!test) return {text:"-", val:null};
 
@@ -944,13 +939,13 @@ function toggleExamSummary(){
 }
 
     // ===== GET DATA =====
-    const ct1 = getMarks("Class Test - I", 5);
-    const ct2 = getMarks("Class Test - II", 5);
-    const ct3 = getMarks("Class Test - III", 5);
-    const ct4 = getMarks("Class Test - IV", 5);
+    const ct1 = getMarksById("CT1", 5);
+const ct2 = getMarksById("CT2", 5);
+const ct3 = getMarksById("CT3", 5);
+const ct4 = getMarksById("CT4", 5);
 
-    const mid = getMarks("Mid-Sem", 10);
-    const end = getMarks("End-Sem", 20);
+const mid = getMarksById("MID1", 10);
+const end = getMarksById("END1", 20);
 
     // ===== CALCULATIONS =====
     const internal =
