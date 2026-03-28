@@ -554,9 +554,18 @@ function closeAll(){
 }
 
 Promise.all([
-  fetch(BACKEND,{method:"POST",body:new URLSearchParams({action:"dashboard",token})}).then(r=>r.json()),
-  fetch(BACKEND,{method:"POST",body:new URLSearchParams({action:"getMyAttendance",token})}).then(r=>r.json())
-]).then(([d,a])=>{
+  fetch(BACKEND,{
+    method:"POST",
+    body:new URLSearchParams({action:"dashboard",token})
+  }).then(r => r.json()),
+
+  fetch(BACKEND,{
+    method:"POST",
+    body:new URLSearchParams({action:"getMyAttendance",token})
+  }).then(r => r.json())
+])
+
+.then(([d,a])=>{
 
   if(d.status !== "OK"){
     sessionStorage.clear();
@@ -567,9 +576,25 @@ Promise.all([
   loadingBox.style.display="none";
   contentArea.style.display="block";
   welcomeBox.style.display="block";
-  welcomeText.innerHTML=`Welcome <span style="color:#1b5e20">${d.name} (${d.roll})</span>`;
-  attendanceValue.innerText=a.percent+"%";
-  attendanceValue.className="attendanceValue "+(a.percent>=75?"attendance-good":"attendance-bad");
+
+  welcomeText.innerHTML =
+    `Welcome <span style="color:#1b5e20">${d.name} (${d.roll})</span>`;
+
+  attendanceValue.innerText = a.percent + "%";
+  attendanceValue.className =
+    "attendanceValue " + (a.percent>=75?"attendance-good":"attendance-bad");
+
+})
+
+.catch(err=>{
+  console.error("Dashboard Load Error:", err);
+
+  loadingBox.innerHTML = `
+    <span style="color:#b71c1c">
+      Unable to load dashboard.<br>
+      Please refresh or login again.
+    </span>
+  `;
 });
 
 let attendanceOpen = false;
