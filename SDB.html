@@ -453,7 +453,7 @@ footer{
 </div>
 
 <!-- CLASS TESTS -->
-<button class="btn-tests" onclick="toggleClassTests()"> Exams (CT/MS/ES) </button>
+<button class="btn-tests" onclick="toggleClassTests()"> Class Tests (CT) </button>
 <div id="testsLoading" class="loading" style="display:none">Loading… Please wait</div>
 <div id="testsBox" class="testsContainer" style="display:none"></div>
 
@@ -747,7 +747,9 @@ function toggleClassTests(){
     testsLoading.style.display="none";
     testsBox.style.display="block";
 
-    testsBox.innerHTML = res.tests.map(t => {
+    testsBox.innerHTML = res.tests
+  .filter(t => t.id.startsWith("CT"))   // 👈 ONLY CLASS TESTS
+  .map(t => {
 
   /* CASE 1: Student already attempted */
   if (t.attempted) {
