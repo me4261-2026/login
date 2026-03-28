@@ -845,7 +845,9 @@ function toggleResults(){
     resultsLoading.style.display="none";
     resultsBox.style.display="block";
 
-    resultsBox.innerHTML = res.tests.map(t => `
+    resultsBox.innerHTML = res.tests
+  .filter(t => t.id.startsWith("CT"))   // 👈 ADD THIS
+  .map(t => 
       <div class="testBlock">
         <div class="testBtn ${
   t.evaluated ? "test-completed" : "test-upcoming"
