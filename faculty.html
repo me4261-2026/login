@@ -232,6 +232,61 @@ Evaluate & Publish Results
 </div>
 
 </div>
+  
+</div>
+  <div class="testBlock">
+<button class="testBtn btn-blue" onclick="toggleTest('CT3')">
+  Class Test – III
+  <span id="status_CT3" style="font-size:13px;margin-left:6px;"></span>
+</button>
+
+<div id="CT3" class="testPanel">
+
+<div class="subCard">
+<label class="radioRow">
+<input type="radio" name="action_CT3" onclick="showEnable('CT3')">
+Enable Class Test
+</label>
+
+<label class="radioRow">
+<input type="radio" name="action_CT3" onclick="showEvaluate('CT3')">
+Evaluate Class Test
+</label>
+</div>
+
+<div id="enable_CT3" class="subCard" style="display:none;">
+
+<label class="radioRow">
+<input type="radio" name="enable_CT3" value="ALL" onclick="hideCustom('CT3')">
+Enable for all students
+</label>
+
+<label class="radioRow">
+<input type="radio" name="enable_CT3" value="ATTENDED" onclick="hideCustom('CT3')">
+Enable for attended students
+</label>
+
+<label class="radioRow">
+<input type="radio" name="enable_CT3" value="CUSTOM" onclick="showCustom('CT3')">
+Custom selection
+</label>
+
+<div id="custom_CT3" class="customList"></div>
+
+<button class="btn-main" onclick="enableTest('CT3')">Enable Test</button>
+
+</div>
+
+<div id="eval_CT3" class="subCard" style="display:none;">
+<button class="btn-main"
+id="evalBtn_CT3"
+onclick="evaluateTest('CT3')">
+Evaluate & Publish Results
+</button>
+</div>
+
+</div>
+  
 </div>
   <button class="btn-close" onclick="closeSection()">Close</button>
 </div>
