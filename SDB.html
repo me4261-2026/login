@@ -1052,7 +1052,7 @@ const total =
     `;
   });
 }
-  function toggleMockTests(){
+ function toggleMockTests(){
 
   if(mockBox.style.display === "block"){
     mockBox.style.display = "none";
@@ -1061,24 +1061,58 @@ const total =
 
   closeAll();
   mockLoading.style.display = "block";
-  summaryBox.style.display="none";
-  // Since only 2 static mock tests
-  setTimeout(()=>{
+
+  fetch(BACKEND,{
+    method:"POST",
+    body:new URLSearchParams({
+      action:"getStudentTestStatus",
+      token
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
     mockLoading.style.display = "none";
     mockBox.style.display = "block";
 
-    mockBox.innerHTML = `
-      <div class="testBtn mock-active"
-           onclick="handleMockClick('mock1')">
-        Mock Test – I
-      </div>
+    const mocks = res.tests.filter(t => t.id.toLowerCase().startsWith("mock"));
 
-      <div class="testBtn mock-active"
-           onclick="handleMockClick('mock2')">
-        Mock Test – II
-      </div>
-    `;
-  }, 300);
+    if(!mocks.length){
+      mockBox.innerHTML = `
+        <div class="testBtn test-upcoming">
+          No mock tests available
+        </div>
+      `;
+      return;
+    }
+
+    mockBox.innerHTML = mocks.map(t => {
+
+      if(t.attempted){
+        return `
+          <div class="testBtn test-completed"
+               onclick="handleMockClick('${t.id}')">
+            ${t.name} (COMPLETED)
+          </div>
+        `;
+      }
+
+      if(t.enabled){
+        return `
+          <div class="testBtn mock-active"
+               onclick="handleMockClick('${t.id}')">
+            ${t.name} (START TEST)
+          </div>
+        `;
+      }
+
+      return `
+        <div class="testBtn test-upcoming">
+          ${t.name} (UPCOMING)
+        </div>
+      `;
+
+    }).join("");
+  });
 }
 function handleMockClick(mockId){
 
