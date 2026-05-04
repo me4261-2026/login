@@ -177,8 +177,6 @@ if(!mockId){
   location.replace("SDB.html");
 }
 
-mockTitle.innerText = mockId === "mock1" ? "Mock Test – I" : "Mock Test – II";
-
 /* =========================
    FETCH QUESTIONS
 ========================= */
@@ -200,14 +198,19 @@ fetch(BACKEND,{
     return;
   }
 
+  // 🔥 ADD THIS LINE HERE (VERY IMPORTANT)
+  mockTitle.innerText = res.name;
+
   questions = res.questions;
+
   if(mode !== "fresh"){
-  questions.forEach(q=>{
-    if(q.studentAnswer !== undefined){
-      studentAnswers[q.id] = q.studentAnswer;
-    }
-  });
-}
+    questions.forEach(q=>{
+      if(q.studentAnswer !== undefined){
+        studentAnswers[q.id] = q.studentAnswer;
+      }
+    });
+  }
+
   renderQuestions();
 
   loading.style.display = "none";
