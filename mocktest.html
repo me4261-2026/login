@@ -352,6 +352,7 @@ function showScore(score,total){
   scoreDiv.className = "scoreBox";
   scoreDiv.innerText = `Your Score: ${score} / ${total}`;
   container.prepend(scoreDiv);
+  window.scrollTo({ top: 0, behavior: "smooth" });
 
 }
 
