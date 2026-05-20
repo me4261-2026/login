@@ -234,7 +234,7 @@ function submitFeedback(){
   .then(r=>r.json())
   .then(res=>{
     if(res.status==="OK" || res.status==="ALREADY_SUBMITTED"){
-      window.location.href="allocate.html";
+      window.location.href="SDB.html";
     }else{
       msg.innerText="Submission failed";
       document.getElementById("submitBtn").disabled = false; // re-enable if failed
