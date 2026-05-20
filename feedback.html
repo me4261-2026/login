@@ -153,9 +153,10 @@ button{
 <div id="msg"></div>
 </div>
 
+<script src="config.js"></script>
 <script>
-const BACKEND="https://script.google.com/macros/s/AKfycbwFO7TEzMWldNKZO1dURnIRRRlGkwC4XIcqkqKI4_A72gs_AlzjS5hIzoNnHujPSq78rw/exec";
-const token=sessionStorage.getItem("token");
+const BACKEND = BACKEND_URL;
+const token = sessionStorage.getItem("token");
 
 if(!token){
   alert("Session expired");
