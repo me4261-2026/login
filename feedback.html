@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Course Feedback</title>
+
+<style>
+    button:disabled{
+  background:#999;
+  cursor:not-allowed;
+}
+body{
+  font-family:"Segoe UI",Arial;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  margin:0;
+  padding:12px;
+}
+
+.card{
+  background:#fff;
+  padding:20px;
+  border-radius:14px;
+  width:100%;
+  max-width:480px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.25);
+}
+
+h2{
+  text-align:center;
+  margin-bottom:12px;
+  font-size:20px;
+  color:#203a43;
+}
+
+.q{
+  margin-top:12px;
+  font-weight:600;
+  font-size:14px;
+}
+
+select, textarea{
+  width:100%;
+  padding:10px;
+  margin-top:5px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  font-size:14px;
+  box-sizing:border-box;   /* 🔴 IMPORTANT FIX */
+}
+.error{
+  border:2px solid #e53935 !important;
+}
+textarea{
+  min-height:80px;
+  resize:none;
+}
+
+button{
+  margin-top:18px;
+  width:100%;
+  padding:12px;
+  background:linear-gradient(135deg,#2c5364,#203a43);
+  color:#fff;
+  border:none;
+  border-radius:25px;
+  font-weight:600;
+  font-size:15px;
+}
+
+.msg{
+  text-align:center;
+  margin-top:10px;
+  font-weight:600;
+  color:red;
+}
+
+/* 📱 Extra mobile tweak */
+@media(max-width:480px){
+  .card{
+    padding:16px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+<h2>Course Feedback</h2>
+
+<div class="q">Group Discussion usefulness</div>
+<select id="q1">
+<option value="" disabled selected>Select</option>
+<option>Very Good</option>
+<option>Good</option>
+<option>Average</option>
+<option>Bad</option>
+<option>Very Bad</option>
+</select>
+
+<div class="q">Seminar effectiveness</div>
+<select id="q2">
+<option value="" disabled selected>Select</option>
+<option>Very Good</option>
+<option>Good</option>
+<option>Average</option>
+<option>Bad</option>
+<option>Very Bad</option>
+</select>
+
+<div class="q">Interview preparation support</div>
+<select id="q3">
+<option value="" disabled selected>Select</option>
+<option>Very Good</option>
+<option>Good</option>
+<option>Average</option>
+<option>Bad</option>
+<option>Very Bad</option>
+</select>
+
+<div class="q">Skill improvement</div>
+<select id="q4">
+<option value="" disabled selected>Select</option>
+<option>Very Good</option>
+<option>Good</option>
+<option>Average</option>
+<option>Bad</option>
+<option>Very Bad</option>
+</select>
+
+<div class="q">Faculty support & guidance</div>
+<select id="q5">
+<option value="" disabled selected>Select</option>
+<option>Very Good</option>
+<option>Good</option>
+<option>Average</option>
+<option>Bad</option>
+<option>Very Bad</option>
+</select>
+
+<div class="q">Suggestions</div>
+<textarea id="suggestion"></textarea>
+
+<button id="submitBtn" onclick="submitFeedback()" disabled>
+  Submit Feedback
+</button>
+
+<div id="msg"></div>
+</div>
+
+<script>
+const BACKEND="https://script.google.com/macros/s/AKfycbwFO7TEzMWldNKZO1dURnIRRRlGkwC4XIcqkqKI4_A72gs_AlzjS5hIzoNnHujPSq78rw/exec";
+const token=sessionStorage.getItem("token");
+
+if(!token){
+  alert("Session expired");
+  location.replace("index.html");
+}
+
+document.querySelectorAll("select").forEach(sel=>{
+  sel.addEventListener("change", function(){
+    this.classList.remove("error");  // remove red when corrected
+    checkAllFilled();
+  });
+});
+
+function checkAllFilled(){
+  const filled =
+  document.getElementById("q1").value &&
+  document.getElementById("q2").value &&
+  document.getElementById("q3").value &&
+  document.getElementById("q4").value &&
+  document.getElementById("q5").value;
+  document.getElementById("submitBtn").disabled = !filled;
+}
+
+function submitFeedback(){
+
+  const msg = document.getElementById("msg");
+
+  const q1El = document.getElementById("q1");
+  const q2El = document.getElementById("q2");
+  const q3El = document.getElementById("q3");
+  const q4El = document.getElementById("q4");
+  const q5El = document.getElementById("q5");
+
+  // 🔴 Reset errors
+  [q1El,q2El,q3El,q4El,q5El].forEach(el => el.classList.remove("error"));
+
+  let valid = true;
+
+  [q1El,q2El,q3El,q4El,q5El].forEach(el=>{
+    if(!el.value){
+      el.classList.add("error");
+      valid = false;
+    }
+  });
+
+ if(!valid){
+  msg.innerText = "Please answer all questions";
+
+  // 🔽 Scroll to first error
+  const firstError = document.querySelector(".error");
+  if(firstError){
+    firstError.scrollIntoView({ behavior:"smooth", block:"center" });
+  }
+
+  return;
+}
+
+  msg.innerText = "Submitting...";
+
+  // 🔒 Disable button after click
+  document.getElementById("submitBtn").disabled = true;
+
+  fetch(BACKEND,{
+    method:"POST",
+    body:new URLSearchParams({
+      action:"submitFeedback",
+      token:token,
+      q1:q1El.value,
+      q2:q2El.value,
+      q3:q3El.value,
+      q4:q4El.value,
+      q5:q5El.value,
+      suggestion:suggestion.value
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.status==="OK" || res.status==="ALREADY_SUBMITTED"){
+      window.location.href="allocate.html";
+    }else{
+      msg.innerText="Submission failed";
+      document.getElementById("submitBtn").disabled = false; // re-enable if failed
+    }
+  })
+  .catch(()=>{
+    msg.innerText="Server error";
+    document.getElementById("submitBtn").disabled = false;
+  });
+}
+
+</script>
+
+</body>
+</html>
