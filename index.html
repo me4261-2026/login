@@ -2,10 +2,29 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Redirecting…</title>
-  <meta http-equiv="refresh" content="0; url=login.html">
+  <title>Loading Course Portal…</title>
+  
+  <!-- Link Manifest -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#007bff">
+
+  <!-- Register Service Worker & Redirect -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('PWA Registered!', reg))
+          .catch(err => console.log('PWA Registration Failed', err));
+      });
+    }
+
+    // Redirect after 2 seconds to ensure registration finishes
+    setTimeout(() => {
+      window.location.href = "login.html";
+    }, 2000);
+  </script>
 </head>
 <body>
-  Redirecting to login…
+  Connecting to course portal...
 </body>
 </html>
