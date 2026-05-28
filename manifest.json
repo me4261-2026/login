@@ -1,6 +1,6 @@
 {
-  "short_name": "CourseApp",
-  "name": "Course Classroom Portal",
+  "short_name": "ME4261",
+  "name": "Energy Storage Technology (ME4261)",
   "icons": [
     {
       "src": "icon-192.png",
@@ -13,9 +13,9 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": "/index.html",
-  "background_color": "#ffffff",
-  "theme_color": "#007bff",
+  "start_url": "./login.html",
+  "background_color": "#0f2027",
+  "theme_color": "#2c5364",
   "display": "standalone",
   "orientation": "portrait"
 }
