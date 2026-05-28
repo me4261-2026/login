@@ -7,8 +7,15 @@ const ASSETS = [
   './login.html',
   './faculty_login.html',
   './SDB.html',
+  './faculty.html',
+  './results.html',
+  './feedback.html',
+  './mocktest.html',
+  './test.html',
   './config.js',
-  './manifest.json'
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 // 🚀 2. Install Event: Triggered when the student adds the app to their phone
