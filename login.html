@@ -5,6 +5,22 @@
 <title>Student Login | ME4261</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- Link PWA Manifest -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2c5364">
+
+<!-- Register PWA Service Worker -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      // Using './sw.js' ensures it works correctly on GitHub Pages subfolders
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('PWA Registered!', reg))
+        .catch(err => console.log('PWA Registration Failed', err));
+    });
+  }
+</script>
+
 <style>
 *{box-sizing:border-box;}
 body{
